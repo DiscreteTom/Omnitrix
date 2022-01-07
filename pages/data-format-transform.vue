@@ -69,7 +69,7 @@ export default {
 
         switch (this.toLang) {
           case "json":
-            this.toTxt = JSON.stringify(input);
+            this.toTxt = JSON.stringify(input, null, 2);
             break;
           case "yaml":
             this.toTxt = yaml.dump(input);
