@@ -17,6 +17,7 @@
                 @input="updateOutput($event)"
                 codeStyle="background:#272822;"
                 :highlighter="highlighter"
+                :lang="fromLang"
               />
             </client-only>
           </v-card-text>
@@ -39,6 +40,7 @@
                 readonly
                 codeStyle="background:#272822;"
                 :highlighter="highlighter"
+                :lang="toLang"
               />
             </client-only>
           </v-card-text>
@@ -50,10 +52,6 @@
 
 <script>
 import yaml from "js-yaml";
-import { highlight, languages } from "prismjs/components/prism-core";
-import "prismjs/components/prism-clike";
-import "prismjs/components/prism-javascript";
-import "prismjs/themes/prism-tomorrow.css";
 
 export default {
   data() {
@@ -66,7 +64,7 @@ export default {
   },
   methods: {
     highlighter(editor) {
-      editor.innerHTML = highlight(editor.textContent, languages.js);
+      this.$prism.highlightElement(editor);
     },
     updateOutput(code) {
       if (code.length === 0) {

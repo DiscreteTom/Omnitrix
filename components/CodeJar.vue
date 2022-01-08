@@ -1,6 +1,10 @@
 <template>
   <div>
-    <div ref="editor" class="jar-editor" :style="codeStyle" />
+    <div
+      ref="editor"
+      :class="`jar-editor language-${lang}`"
+      :style="codeStyle"
+    />
   </div>
 </template>
 
@@ -17,6 +21,7 @@ export default {
     value: String,
     readonly: Boolean,
     codeStyle: String,
+    lang: String,
     highlighter: {
       type: Function,
       default: () => {},
