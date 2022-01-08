@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-row>
-      <v-col>
+      <v-col cols="6">
         <v-card>
           <v-card-text>
             <v-select
@@ -12,11 +12,17 @@
               v-model="fromLang"
               label="From"
             />
-            <v-textarea outlined @input="updateOutput" v-model="fromTxt" />
+            <client-only>
+              <code-jar
+                @input="updateOutput($event)"
+                codeStyle="background:#272822;"
+                :highlighter="highlighter"
+              />
+            </client-only>
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col>
+      <v-col cols="6">
         <v-card>
           <v-card-text>
             <v-select
@@ -27,7 +33,14 @@
               :items="languages"
               label="To"
             />
-            <v-textarea outlined readonly v-model="toTxt" />
+            <client-only>
+              <code-jar
+                :value="toTxt"
+                readonly
+                codeStyle="background:#272822;"
+                :highlighter="highlighter"
+              />
+            </client-only>
           </v-card-text>
         </v-card>
       </v-col>
@@ -37,11 +50,14 @@
 
 <script>
 import yaml from "js-yaml";
+import { highlight, languages } from "prismjs/components/prism-core";
+import "prismjs/components/prism-clike";
+import "prismjs/components/prism-javascript";
+import "prismjs/themes/prism-tomorrow.css";
 
 export default {
   data() {
     return {
-      fromTxt: "",
       fromLang: "json",
       toTxt: "",
       toLang: "yaml",
@@ -49,8 +65,11 @@ export default {
     };
   },
   methods: {
-    updateOutput() {
-      if (this.fromTxt.length === 0) {
+    highlighter(editor) {
+      editor.innerHTML = highlight(editor.textContent, languages.js);
+    },
+    updateOutput(code) {
+      if (code.length === 0) {
         this.toTxt = "";
         return;
       }
@@ -60,10 +79,10 @@ export default {
 
         switch (this.fromLang) {
           case "json":
-            input = JSON.parse(this.fromTxt);
+            input = JSON.parse(code);
             break;
           case "yaml":
-            input = yaml.load(this.fromTxt);
+            input = yaml.load(code);
             break;
         }
 
@@ -76,7 +95,7 @@ export default {
             break;
         }
       } catch (e) {
-        this.toTxt = e;
+        this.toTxt = e.toString();
       }
     },
   },
