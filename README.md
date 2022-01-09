@@ -1,8 +1,4 @@
-<h1 style="display:flex">
-  <div style="color: #55f50a; transform: scale(0.8, 1.5)">&gt;</div>
-  <span style="margin:0 10px;">Omnitrix</span>
-  <div style="color: #55f50a; transform: scale(0.8, 1.5)">&lt;</div>
-</h1>
+# Omnitrix
 
 > Deployed on [github pages](https://discretetom.github.io/Omnitrix/).
 
