@@ -1,24 +1,59 @@
 <template>
   <div>
-    <div class="d-flex mb-3">
-      <v-text-field
-        type="number"
-        label="Refresh Interval(ms)"
-        v-model="intervalMs"
-        outlined
-        dense
-        hide-details
-        class="mr-3"
-      />
-      <v-tooltip top>
-        <template v-slot:activator="{ on }">
-          <v-btn icon @click="resetTimer" v-on="on">
-            <v-icon> mdi-check </v-icon>
-          </v-btn>
-        </template>
-        <span>Apply Interval</span>
-      </v-tooltip>
+    <!-- form -->
+    <div>
+      <v-switch v-model="live" label="Live" inset class="mt-0"></v-switch>
+
+      <div v-if="live" class="d-flex mb-3">
+        <v-text-field
+          type="number"
+          label="Refresh Interval(ms)"
+          v-model="intervalMs"
+          outlined
+          dense
+          hide-details
+          class="mr-3"
+        />
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn icon @click="resetTimer" v-on="on">
+              <v-icon> mdi-check </v-icon>
+            </v-btn>
+          </template>
+          <span>Apply Interval</span>
+        </v-tooltip>
+      </div>
+
+      <div v-else class="d-flex mb-3">
+        <v-select
+          label="From"
+          :items="formats"
+          outlined
+          dense
+          hide-details
+          v-model="fromFormat"
+          class="mr-3"
+        />
+        <v-text-field
+          label="Value"
+          v-model="fromValue"
+          outlined
+          dense
+          hide-details
+          class="mr-3"
+        />
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on" @click="calculate">
+              <v-icon> mdi-check </v-icon>
+            </v-btn>
+          </template>
+          <span> Calculate </span>
+        </v-tooltip>
+      </div>
     </div>
+
+    <!-- cards -->
     <div class="d-flex flex-wrap">
       <v-card class="mx-2 my-2 flex-grow-1">
         <v-card-title> UTC </v-card-title>
@@ -58,6 +93,7 @@
 export default {
   data() {
     return {
+      live: true,
       intervalMs: 1000,
       timer: null,
       utc: "",
@@ -65,11 +101,14 @@ export default {
       locale: "",
       local: "",
       timestamp: "",
+      fromValue: "",
+      fromFormat: "timestamp(ms)",
+      formats: ["timestamp(ms)", "iso", "utc", "locale", "local"],
     };
   },
   methods: {
-    update() {
-      let date = new Date();
+    update(date) {
+      if (date === undefined || date == null) date = new Date();
       this.utc = date.toUTCString();
       this.iso = date.toISOString();
       this.locale = date.toLocaleString();
@@ -81,12 +120,26 @@ export default {
       this.update();
     },
     clearTimer() {
-      clearInterval(this.timer);
-      this.timer = null;
+      if (this.timer !== null) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
     },
     resetTimer() {
       this.clearTimer();
       this.applyTimer();
+    },
+    calculate() {
+      let date;
+      switch (this.fromFormat) {
+        case "timestamp(ms)":
+          date = new Date(parseInt(this.fromValue));
+          break;
+        default:
+          date = new Date(this.fromValue);
+          break;
+      }
+      this.update(date);
     },
   },
   mounted() {
@@ -94,6 +147,15 @@ export default {
   },
   destroyed() {
     this.clearTimer();
+  },
+  watch: {
+    live(val) {
+      if (val) {
+        this.resetTimer();
+      } else {
+        this.clearTimer();
+      }
+    },
   },
 };
 </script>
