@@ -15,10 +15,11 @@ export default {
   data() {
     return {
       jar: null,
+      isLegacy: false,
     };
   },
   props: {
-    value: String,
+    value: { type: String, default: "" },
     readonly: Boolean,
     codeStyle: String,
     lang: String,
@@ -29,14 +30,20 @@ export default {
   },
   methods: {
     setReadonly(val) {
-      this.$refs.editor.setAttribute("contenteditable", val ? "false" : "true");
+      this.$refs.editor.setAttribute(
+        "contenteditable",
+        val ? "false" : this.isLegacy ? "true" : "plaintext-only"
+      );
     },
   },
   mounted() {
     this.jar = CodeJar(this.$refs.editor, this.highlighter);
+    if (this.$refs.editor.contentEditable !== "plaintext-only")
+      this.isLegacy = true;
+
     this.jar.onUpdate((code) => this.$emit("input", code));
-    this.jar.updateCode(this.value);
     this.setReadonly(this.readonly);
+    this.jar.updateCode(this.value);
   },
   watch: {
     value(val) {
