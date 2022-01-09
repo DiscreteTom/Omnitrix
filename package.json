@@ -12,6 +12,7 @@
     "lintfix": "prettier --write --list-different ."
   },
   "dependencies": {
+    "clipboard": "^2.0.8",
     "codejar": "^3.5.0",
     "core-js": "^3.19.3",
     "js-yaml": "^4.1.0",
