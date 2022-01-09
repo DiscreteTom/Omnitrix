@@ -30,7 +30,7 @@
       <!-- Github Btn -->
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" href="https://github.com/DiscreteTom/omnitrix">
+          <v-btn icon v-on="on" href="https://github.com/DiscreteTom/Omnitrix">
             <v-icon>mdi-github</v-icon>
           </v-btn>
         </template>
