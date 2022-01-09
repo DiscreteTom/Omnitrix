@@ -1,13 +1,13 @@
 <template>
   <div>
     <!-- form -->
-    <div>
-      <v-switch v-model="live" label="Live" inset class="mt-0"></v-switch>
+    <div class="mx-2">
+      <v-switch v-model="live" label="Live" inset class="mt-0 mx-2"></v-switch>
 
       <div v-if="live" class="d-flex mb-3">
         <v-text-field
           type="number"
-          label="Refresh Interval(ms)"
+          label="Refresh Interval (ms)"
           v-model="intervalMs"
           outlined
           dense
