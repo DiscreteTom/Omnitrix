@@ -59,7 +59,7 @@ export default {
       fromLang: "json",
       toTxt: "",
       toLang: "yaml",
-      languages: ["json", "yaml"],
+      languages: ["json", "yaml", "javascript"],
     };
   },
   methods: {
@@ -82,10 +82,14 @@ export default {
           case "yaml":
             input = yaml.load(code);
             break;
+          case "javascript":
+            input = eval(`(${code})`);
+            break;
         }
 
         switch (this.toLang) {
           case "json":
+          case "javascript":
             this.toTxt = JSON.stringify(input, null, 2);
             break;
           case "yaml":
