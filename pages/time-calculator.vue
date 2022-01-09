@@ -2,7 +2,7 @@
   <div>
     <!-- form -->
     <div class="mx-2">
-      <v-switch v-model="live" label="Live" inset class="mt-0 mx-2"></v-switch>
+      <v-switch v-model="live" label="Live" inset class="mt-0 mx-2" />
 
       <div v-if="live" class="d-flex mb-3">
         <v-text-field
