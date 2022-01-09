@@ -13,7 +13,10 @@
               label="From"
             />
             <code-jar
-              @input="updateOutput($event)"
+              @input="
+                fromTxt = $event;
+                updateOutput();
+              "
               codeStyle="background:#272822;"
               :highlighter="highlighter"
               :lang="fromLang"
@@ -56,6 +59,7 @@ export default {
   components: { CodeJar },
   data() {
     return {
+      fromTxt: "",
       fromLang: "json",
       toTxt: "",
       toLang: "yaml",
@@ -66,8 +70,8 @@ export default {
     highlighter(editor) {
       this.$prism.highlightElement(editor);
     },
-    updateOutput(code) {
-      if (code.length === 0) {
+    updateOutput() {
+      if (this.fromTxt.length === 0) {
         this.toTxt = "";
         return;
       }
@@ -77,13 +81,13 @@ export default {
 
         switch (this.fromLang) {
           case "json":
-            input = JSON.parse(code);
+            input = JSON.parse(this.fromTxt);
             break;
           case "yaml":
-            input = yaml.load(code);
+            input = yaml.load(this.fromTxt);
             break;
           case "javascript":
-            input = eval(`(${code})`);
+            input = eval(`(${this.fromTxt})`);
             break;
         }
 
