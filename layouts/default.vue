@@ -19,10 +19,10 @@
 
     <v-app-bar clipped-left fixed app dense>
       <v-app-bar-nav-icon @click.stop="leftDrawer = !leftDrawer" />
-      <v-toolbar-title>
-        <span style="color: #55f50a"> &gt; </span>
-        Omnitrix
-        <span style="color: #55f50a"> &lt; </span>
+      <v-toolbar-title class="d-flex">
+        <div style="color: #55f50a; transform: scale(0.8, 1.5)">&gt;</div>
+        <span class="mx-2">Omnitrix</span>
+        <div style="color: #55f50a; transform: scale(0.8, 1.5)">&lt;</div>
       </v-toolbar-title>
 
       <v-spacer />
