@@ -17,6 +17,7 @@
               codeStyle="background:#272822;"
               :highlighter="highlighter"
               :lang="fromLang"
+              line-numbers
             />
           </v-card-text>
         </v-card>
@@ -38,6 +39,7 @@
               codeStyle="background:#272822;"
               :highlighter="highlighter"
               :lang="toLang"
+              line-numbers
             />
           </v-card-text>
         </v-card>
@@ -48,8 +50,10 @@
 
 <script>
 import yaml from "js-yaml";
+import CodeJar from "vue-codejar";
 
 export default {
+  components: { CodeJar },
   data() {
     return {
       fromLang: "json",
