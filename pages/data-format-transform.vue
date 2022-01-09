@@ -4,14 +4,31 @@
       <v-col cols="6">
         <v-card>
           <v-card-text>
-            <v-select
-              outlined
-              dense
-              @input="updateOutput"
-              :items="languages"
-              v-model="fromLang"
-              label="From"
-            />
+            <div class="d-flex align-center mb-3">
+              <v-select
+                class="mr-3"
+                outlined
+                dense
+                @input="updateOutput"
+                :items="languages"
+                v-model="fromLang"
+                label="From"
+                hide-details
+              />
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    class="clipboard-btn"
+                    :data-clipboard-text="fromTxt"
+                    v-on="on"
+                  >
+                    <v-icon> mdi-content-copy </v-icon>
+                  </v-btn>
+                </template>
+                <span>Copy</span>
+              </v-tooltip>
+            </div>
             <code-jar
               @input="
                 fromTxt = $event;
@@ -28,14 +45,31 @@
       <v-col cols="6">
         <v-card>
           <v-card-text>
-            <v-select
-              outlined
-              dense
-              @input="updateOutput"
-              v-model="toLang"
-              :items="languages"
-              label="To"
-            />
+            <div class="d-flex align-center mb-3">
+              <v-select
+                class="mr-3"
+                outlined
+                dense
+                @input="updateOutput"
+                v-model="toLang"
+                :items="languages"
+                label="To"
+                hide-details
+              />
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    class="clipboard-btn"
+                    :data-clipboard-text="toTxt"
+                    v-on="on"
+                  >
+                    <v-icon> mdi-content-copy </v-icon>
+                  </v-btn>
+                </template>
+                <span>Copy</span>
+              </v-tooltip>
+            </div>
             <code-jar
               :value="toTxt"
               readonly
@@ -54,6 +88,7 @@
 <script>
 import yaml from "js-yaml";
 import CodeJar from "vue-codejar";
+import ClipboardJS from "clipboard";
 
 export default {
   components: { CodeJar },
@@ -64,6 +99,7 @@ export default {
       toTxt: "",
       toLang: "yaml",
       languages: ["json", "yaml", "javascript"],
+      clipboard: null,
     };
   },
   methods: {
@@ -104,6 +140,12 @@ export default {
         this.toTxt = e.toString();
       }
     },
+  },
+  mounted() {
+    this.clipboard = new ClipboardJS(".clipboard-btn");
+  },
+  destroyed() {
+    delete this.clipboard;
   },
 };
 </script>
