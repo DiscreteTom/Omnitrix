@@ -12,14 +12,12 @@
               v-model="fromLang"
               label="From"
             />
-            <client-only>
-              <code-jar
-                @input="updateOutput($event)"
-                codeStyle="background:#272822;"
-                :highlighter="highlighter"
-                :lang="fromLang"
-              />
-            </client-only>
+            <code-jar
+              @input="updateOutput($event)"
+              codeStyle="background:#272822;"
+              :highlighter="highlighter"
+              :lang="fromLang"
+            />
           </v-card-text>
         </v-card>
       </v-col>
@@ -34,15 +32,13 @@
               :items="languages"
               label="To"
             />
-            <client-only>
-              <code-jar
-                :value="toTxt"
-                readonly
-                codeStyle="background:#272822;"
-                :highlighter="highlighter"
-                :lang="toLang"
-              />
-            </client-only>
+            <code-jar
+              :value="toTxt"
+              readonly
+              codeStyle="background:#272822;"
+              :highlighter="highlighter"
+              :lang="toLang"
+            />
           </v-card-text>
         </v-card>
       </v-col>
