@@ -11,6 +11,9 @@
  */
 
 
+/*! js-yaml 4.1.0 https://github.com/nodeca/js-yaml @license MIT */
+
+
 /*!
  * clipboard.js v2.0.8
  * https://clipboardjs.com/
@@ -38,6 +41,3 @@
  * @namespace
  * @public
  */
-
-
-/*! js-yaml 4.1.0 https://github.com/nodeca/js-yaml @license MIT */
