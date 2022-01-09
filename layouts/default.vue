@@ -2,13 +2,13 @@
   <v-app dark>
     <v-navigation-drawer v-model="leftDrawer" clipped fixed app>
       <v-list>
-        <v-list-item exact to="/data-format-transform">
+        <v-list-item exact to="/data-transformer">
           <v-list-item-action>
             <v-icon> mdi-file-replace-outline </v-icon>
           </v-list-item-action>
           <v-list-item-content>Data Transformer</v-list-item-content>
         </v-list-item>
-        <v-list-item exact to="/time">
+        <v-list-item exact to="/time-calculator">
           <v-list-item-action>
             <v-icon> mdi-clock-outline </v-icon>
           </v-list-item-action>
