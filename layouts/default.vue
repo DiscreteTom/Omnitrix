@@ -13,8 +13,32 @@
 
     <v-app-bar clipped-left fixed app dense>
       <v-app-bar-nav-icon @click.stop="leftDrawer = !leftDrawer" />
-      <v-toolbar-title>Omnitrix</v-toolbar-title>
+      <v-toolbar-title>
+        <span style="color: #55f50a"> &gt; </span>
+        Omnitrix
+        <span style="color: #55f50a"> &lt; </span>
+      </v-toolbar-title>
+
       <v-spacer />
+
+      <!-- Github Btn -->
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" href="https://github.com/DiscreteTom/omnitrix">
+            <v-icon>mdi-github</v-icon>
+          </v-btn>
+        </template>
+        <span>View Source Code</span>
+      </v-tooltip>
+      <!-- Share Btn -->
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" :data-clipboard-text="url" id="share-btn">
+            <v-icon>mdi-share-variant</v-icon>
+          </v-btn>
+        </template>
+        <span>Copy Link</span>
+      </v-tooltip>
     </v-app-bar>
 
     <v-main>
@@ -30,12 +54,27 @@
 </template>
 
 <script>
+import ClipboardJS from "clipboard";
+
 export default {
-  name: 'DefaultLayout',
   data() {
     return {
       leftDrawer: true,
-    }
+      isMounted: false,
+      clipboard: null,
+    };
   },
-}
+  computed: {
+    url() {
+      return this.isMounted ? window.location.href : "";
+    },
+  },
+  mounted() {
+    this.isMounted = true;
+    this.clipboard = new ClipboardJS("#share-btn");
+  },
+  destroyed() {
+    delete this.clipboard;
+  },
+};
 </script>
