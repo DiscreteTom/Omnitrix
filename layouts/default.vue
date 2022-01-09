@@ -6,13 +6,13 @@
           <v-list-item-action>
             <v-icon> mdi-file-replace-outline </v-icon>
           </v-list-item-action>
-          <v-list-item-content>Data Format Transform</v-list-item-content>
+          <v-list-item-content>Data Transformer</v-list-item-content>
         </v-list-item>
         <v-list-item exact to="/time">
           <v-list-item-action>
             <v-icon> mdi-clock-outline </v-icon>
           </v-list-item-action>
-          <v-list-item-content>Time Format Transform</v-list-item-content>
+          <v-list-item-content>Time Calculator</v-list-item-content>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
