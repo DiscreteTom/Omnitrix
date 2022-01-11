@@ -78,6 +78,11 @@ export default {
           icon: "mdi-code-tags",
           text: "Text Codec",
         },
+        {
+          to: "/random",
+          icon: "mdi-help-circle-outline",
+          text: "Random Generator",
+        },
       ],
     };
   },
