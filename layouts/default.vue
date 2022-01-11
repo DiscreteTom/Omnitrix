@@ -14,6 +14,12 @@
           </v-list-item-action>
           <v-list-item-content>Time Calculator</v-list-item-content>
         </v-list-item>
+        <v-list-item exact to="/text-codec">
+          <v-list-item-action>
+            <v-icon> mdi-code-tags </v-icon>
+          </v-list-item-action>
+          <v-list-item-content>Text Codec</v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
