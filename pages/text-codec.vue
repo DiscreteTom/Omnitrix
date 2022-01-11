@@ -54,15 +54,15 @@ export default {
   data() {
     return {
       result: {
-        Text: "",
+        "UTF-8": "",
         MD5: "",
         "URL Encoded": "",
         Base64: "",
       },
 
       fromValue: "Omnitrix",
-      fromFormat: "Text",
-      formats: ["Text", "URL Encoded", "Base64"],
+      fromFormat: "UTF-8",
+      formats: ["UTF-8", "URL Encoded", "Base64"],
     };
   },
   methods: {
@@ -77,7 +77,7 @@ export default {
             text = Base64.decode(text);
         }
       } catch (e) {
-        this.result.Text = e.toString();
+        this.result["UTF-8"] = e.toString();
         this.result.MD5 = e.toString();
         this.result["URL Encoded"] = e.toString();
         this.result.Base64 = e.toString();
@@ -91,7 +91,7 @@ export default {
           return e.toString();
         }
       }
-      this.result.Text = text;
+      this.result["UTF-8"] = text;
       this.result.MD5 = errToString(md5, text);
       this.result["URL Encoded"] = errToString(encodeURIComponent, text);
       this.result.Base64 = errToString(Base64.encode, text);
