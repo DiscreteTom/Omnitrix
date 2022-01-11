@@ -79,6 +79,11 @@ export default {
           text: "Text Codec",
         },
         {
+          to: "/number-convertor",
+          icon: "mdi-hexadecimal",
+          text: "Number Convertor",
+        },
+        {
           to: "/random",
           icon: "mdi-help-circle-outline",
           text: "Random Generator",
