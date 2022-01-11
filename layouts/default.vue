@@ -2,23 +2,11 @@
   <v-app dark>
     <v-navigation-drawer v-model="leftDrawer" clipped fixed app>
       <v-list>
-        <v-list-item exact to="/data-transformer">
+        <v-list-item v-for="page in pages" :key="page.text" exact :to="page.to">
           <v-list-item-action>
-            <v-icon> mdi-file-replace-outline </v-icon>
+            <v-icon> {{ page.icon }} </v-icon>
           </v-list-item-action>
-          <v-list-item-content>Data Transformer</v-list-item-content>
-        </v-list-item>
-        <v-list-item exact to="/time-calculator">
-          <v-list-item-action>
-            <v-icon> mdi-clock-outline </v-icon>
-          </v-list-item-action>
-          <v-list-item-content>Time Calculator</v-list-item-content>
-        </v-list-item>
-        <v-list-item exact to="/text-codec">
-          <v-list-item-action>
-            <v-icon> mdi-code-tags </v-icon>
-          </v-list-item-action>
-          <v-list-item-content>Text Codec</v-list-item-content>
+          <v-list-item-content>{{ page.text }}</v-list-item-content>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -74,6 +62,23 @@ export default {
       leftDrawer: true,
       isMounted: false,
       clipboard: null,
+      pages: [
+        {
+          to: "/data-transformer",
+          icon: "mdi-file-replace-outline",
+          text: "Data Transformer",
+        },
+        {
+          to: "/time-calculator",
+          icon: "mdi-clock-outline",
+          text: "Time Calculator",
+        },
+        {
+          to: "/text-codec",
+          icon: "mdi-code-tags",
+          text: "Text Codec",
+        },
+      ],
     };
   },
   computed: {
