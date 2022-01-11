@@ -49,6 +49,7 @@
 <script>
 import md5 from "js-md5";
 import { Base64 } from "js-base64";
+import Zlib from "zlib";
 
 export default {
   data() {
@@ -56,13 +57,23 @@ export default {
       result: {
         "UTF-8": "",
         MD5: "",
-        "URL Encoded": "",
+        "URL Encode": "",
         Base64: "",
+        "Gzip + Base64": "",
+        "Inflate + Base64": "",
+        "Inflate Raw + Base64": "",
       },
 
       fromValue: "Omnitrix",
       fromFormat: "UTF-8",
-      formats: ["UTF-8", "URL Encoded", "Base64"],
+      formats: [
+        "UTF-8",
+        "URL Encode",
+        "Base64",
+        "Gzip + Base64",
+        "Inflate + Base64",
+        "Inflate Raw + Base64",
+      ],
     };
   },
   methods: {
@@ -70,17 +81,26 @@ export default {
       let text = this.fromValue;
       try {
         switch (this.fromFormat) {
-          case "URL Encoded":
+          case "URL Encode":
             text = decodeURIComponent(text);
             break;
           case "Base64":
             text = Base64.decode(text);
+            break;
+          case "Gzip + Base64":
+            text = Zlib.gunzipSync(Buffer.from(text, "base64"));
+            break;
+          case "Inflate + Base64":
+            text = Zlib.inflateSync(Buffer.from(text, "base64"));
+            break;
+          case "Inflate Raw + Base64":
+            text = Zlib.inflateRawSync(Buffer.from(text, "base64"));
+            break;
         }
       } catch (e) {
-        this.result["UTF-8"] = e.toString();
-        this.result.MD5 = e.toString();
-        this.result["URL Encoded"] = e.toString();
-        this.result.Base64 = e.toString();
+        for (let key in this.result) {
+          this.result[key] = e.toString();
+        }
         return;
       }
 
@@ -93,8 +113,20 @@ export default {
       }
       this.result["UTF-8"] = text;
       this.result.MD5 = errToString(md5, text);
-      this.result["URL Encoded"] = errToString(encodeURIComponent, text);
+      this.result["URL Encode"] = errToString(encodeURIComponent, text);
       this.result.Base64 = errToString(Base64.encode, text);
+      this.result["Gzip + Base64"] = errToString(
+        (text) => Zlib.gzipSync(text).toString("base64"),
+        text
+      );
+      this.result["Inflate + Base64"] = errToString(
+        (text) => Zlib.deflateSync(text).toString("base64"),
+        text
+      );
+      this.result["Inflate Raw + Base64"] = errToString(
+        (text) => Zlib.deflateRawSync(text).toString("base64"),
+        text
+      );
     },
     updateFromValue() {
       this.fromValue = this.result[this.fromFormat];
