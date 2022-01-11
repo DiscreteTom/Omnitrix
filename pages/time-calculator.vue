@@ -62,34 +62,14 @@
 
     <!-- cards -->
     <div class="d-flex flex-wrap">
-      <v-card class="mx-2 my-2 flex-grow-1">
-        <v-card-title> UTC </v-card-title>
+      <v-card
+        v-for="(value, name) in result"
+        :key="name"
+        class="mx-2 my-2 flex-grow-1"
+      >
+        <v-card-title> {{ name }} </v-card-title>
         <v-card-text>
-          {{ utc }}
-        </v-card-text>
-      </v-card>
-      <v-card class="mx-2 my-2 flex-grow-1">
-        <v-card-title> Timestamp (ms) </v-card-title>
-        <v-card-text>
-          {{ timestamp }}
-        </v-card-text>
-      </v-card>
-      <v-card class="mx-2 my-2 flex-grow-1">
-        <v-card-title> ISO </v-card-title>
-        <v-card-text>
-          {{ iso }}
-        </v-card-text>
-      </v-card>
-      <v-card class="mx-2 my-2 flex-grow-1">
-        <v-card-title> Locale </v-card-title>
-        <v-card-text>
-          {{ locale }}
-        </v-card-text>
-      </v-card>
-      <v-card class="mx-2 my-2 flex-grow-1">
-        <v-card-title> Literal </v-card-title>
-        <v-card-text>
-          {{ literal }}
+          {{ value }}
         </v-card-text>
       </v-card>
 
@@ -138,14 +118,18 @@ export default {
       live: true,
       intervalMs: 1000,
       timer: null,
-      utc: "",
-      iso: "",
-      locale: "",
-      literal: "",
-      timestamp: "",
+
+      result: {
+        UTC: "",
+        "Timestamp (ms)": "",
+        ISO: "",
+        Locale: "",
+        Literal: "",
+      },
+
       fromValue: "",
-      fromFormat: "timestamp(ms)",
-      formats: ["timestamp(ms)", "iso", "utc", "locale", "literal"],
+      fromFormat: "Timestamp (ms)",
+      formats: ["Timestamp (ms)", "ISO", "UTC", "Locale", "Literal"],
       timezones: [
         // https://stackoverflow.com/questions/38399465/how-to-get-list-of-all-timezones-in-javascript
         "Europe/Andorra",
@@ -503,11 +487,11 @@ export default {
   methods: {
     update(date) {
       if (date === undefined || date == null) date = new Date();
-      this.utc = date.toUTCString();
-      this.iso = date.toISOString();
-      this.locale = date.toLocaleString();
-      this.literal = date.toString();
-      this.timestamp = date.getTime();
+      this.result.UTC = date.toUTCString();
+      this.result.ISO = date.toISOString();
+      this.result.Locale = date.toLocaleString();
+      this.result.Literal = date.toString();
+      this.result["Timestamp (ms)"] = date.getTime();
       this.custom.map((e) => {
         if (this.timezones.includes(e.tz))
           e.txt = date.toLocaleString(navigator.language, { timeZone: e.tz });
@@ -530,7 +514,7 @@ export default {
     calculate() {
       let date;
       switch (this.fromFormat) {
-        case "timestamp(ms)":
+        case "Timestamp (ms)":
           date = new Date(parseInt(this.fromValue));
           break;
         default:
@@ -540,23 +524,7 @@ export default {
       this.update(date);
     },
     updateFromValue() {
-      switch (this.fromFormat) {
-        case "timestamp(ms)":
-          this.fromValue = this.timestamp;
-          break;
-        case "iso":
-          this.fromValue = this.iso;
-          break;
-        case "utc":
-          this.fromValue = this.utc;
-          break;
-        case "locale":
-          this.fromValue = this.locale;
-          break;
-        case "literal":
-          this.fromValue = this.literal;
-          break;
-      }
+      this.fromValue = this.result[this.fromFormat];
     },
   },
   mounted() {
