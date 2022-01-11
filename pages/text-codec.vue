@@ -128,16 +128,13 @@ export default {
         text
       );
     },
-    updateFromValue() {
-      this.fromValue = this.result[this.fromFormat];
-    },
   },
   mounted() {
     this.calculate();
   },
   watch: {
     fromFormat() {
-      this.updateFromValue();
+      this.calculate();
     },
   },
 };
