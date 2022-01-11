@@ -1,6 +1,6 @@
 <template>
   <div>
-    <text-transform
+    <code-transform
       :leftChoices="languages"
       :leftValue="leftLang"
       :leftLang="leftLang"
@@ -15,11 +15,11 @@
 </template>
 
 <script>
-import TextTransform from "../components/text-transform.vue";
+import CodeTransform from "../components/code-transform.vue";
 import yaml from "js-yaml";
 
 export default {
-  components: { TextTransform },
+  components: { CodeTransform },
   data() {
     return {
       leftLang: "json",
