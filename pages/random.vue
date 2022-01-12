@@ -2,9 +2,11 @@
   <div>
     <v-card
       @click="$copyText(number).then(() => $bus.$emit('append-msg', 'Copied'))"
+      height="80vh"
+      class="d-flex flex-column"
     >
       <v-card-title> Random Integer </v-card-title>
-      <v-card-text>
+      <v-card-text class="flex-grow-1 d-flex flex-column">
         <div
           class="d-flex align-center"
           @click.stop
@@ -36,7 +38,7 @@
             <v-icon> mdi-check </v-icon>
           </v-btn>
         </div>
-        <div class="d-flex justify-center align-center" style="height: 300px">
+        <div class="d-flex justify-center align-center flex-grow-1">
           <span style="font-size: 150px">
             {{ number }}
           </span>

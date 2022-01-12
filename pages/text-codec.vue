@@ -22,7 +22,7 @@
               outlined
               dense
               hide-details
-              :class="$vuetify.breakpoint.smAndUp ? 'mr-3' : 'mb-3'"
+              :class="$vuetify.breakpoint.smAndUp ? 'mr-3' : ''"
               @input="calculate"
             />
           </v-col>

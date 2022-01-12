@@ -46,7 +46,7 @@
               outlined
               dense
               hide-details
-              :class="$vuetify.breakpoint.smAndUp ? 'mr-3' : 'mb-3'"
+              :class="$vuetify.breakpoint.smAndUp ? 'mr-3' : 'mb-3 mr-3'"
               @keydown.enter="calculate"
             />
             <v-tooltip top>
