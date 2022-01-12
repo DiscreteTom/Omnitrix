@@ -103,6 +103,11 @@ export default {
           icon: "mdi-help-circle-outline",
           text: "Random Generator",
         },
+        {
+          to: "/qrcode",
+          icon: "mdi-qrcode",
+          text: "QR Code",
+        },
       ],
     };
   },
