@@ -62,8 +62,8 @@ export default {
         "URL Encode": "",
         Base64: "",
         "Gzip + Base64": "",
-        "Inflate + Base64": "",
-        "Inflate Raw + Base64": "",
+        "Deflate + Base64": "",
+        "Deflate Raw + Base64": "",
       },
 
       fromValue: "Omnitrix",
@@ -73,8 +73,8 @@ export default {
         "URL Encode",
         "Base64",
         "Gzip + Base64",
-        "Inflate + Base64",
-        "Inflate Raw + Base64",
+        "Deflate + Base64",
+        "Deflate Raw + Base64",
       ],
     };
   },
@@ -92,10 +92,10 @@ export default {
           case "Gzip + Base64":
             text = Zlib.gunzipSync(Buffer.from(text, "base64"));
             break;
-          case "Inflate + Base64":
+          case "Deflate + Base64":
             text = Zlib.inflateSync(Buffer.from(text, "base64"));
             break;
-          case "Inflate Raw + Base64":
+          case "Deflate Raw + Base64":
             text = Zlib.inflateRawSync(Buffer.from(text, "base64"));
             break;
         }
@@ -121,11 +121,11 @@ export default {
         (text) => Zlib.gzipSync(text).toString("base64"),
         text
       );
-      this.result["Inflate + Base64"] = errToString(
+      this.result["Deflate + Base64"] = errToString(
         (text) => Zlib.deflateSync(text).toString("base64"),
         text
       );
-      this.result["Inflate Raw + Base64"] = errToString(
+      this.result["Deflate Raw + Base64"] = errToString(
         (text) => Zlib.deflateRawSync(text).toString("base64"),
         text
       );
