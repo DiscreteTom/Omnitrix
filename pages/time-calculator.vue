@@ -65,9 +65,9 @@
       <v-card
         v-for="(value, name) in result"
         :key="name"
-        class="mx-2 my-2 flex-grow-1 clipboard-btn show-copy-msg"
+        class="mx-2 my-2 flex-grow-1"
         hover
-        :data-clipboard-text="value"
+        @click="$copyText(value).then(() => $bus.$emit('append-msg', 'Copied'))"
       >
         <v-card-title>
           {{ name }}
@@ -81,8 +81,12 @@
         v-for="(item, i) in custom"
         :key="i"
         class="mx-2 my-2 flex-grow-1"
+        hover
+        @click="
+          $copyText(item.txt).then(() => $bus.$emit('append-msg', 'Copied'))
+        "
       >
-        <v-card-title>
+        <v-card-title @click.stop @mousedown.stop>
           <v-combobox
             v-model="item.tz"
             :items="timezones"
@@ -92,7 +96,7 @@
             hide-details
             class="mr-3"
           />
-          <v-btn icon @click="custom.pop(i)">
+          <v-btn icon @click.stop="custom.pop(i)">
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-card-title>
@@ -116,8 +120,6 @@
 </template>
 
 <script>
-import ClipboardJS from "clipboard";
-
 export default {
   data() {
     return {
@@ -488,8 +490,6 @@ export default {
         "Africa/Johannesburg",
       ],
       custom: [], // {tz: '', txt: ''}
-
-      clipboard: null,
     };
   },
   methods: {
@@ -536,18 +536,10 @@ export default {
     },
   },
   mounted() {
-    this.clipboard = new ClipboardJS(".clipboard-btn");
-    this.clipboard.on("success", (e) => {
-      if (Array.from(e.trigger.classList).includes("show-copy-msg")) {
-        this.$bus.$emit("append-msg", "Copied");
-      }
-    });
-
     this.applyTimer();
   },
   destroyed() {
     this.clearTimer();
-    delete this.clipboard;
   },
   watch: {
     live(val) {

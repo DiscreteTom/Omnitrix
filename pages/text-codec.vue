@@ -36,6 +36,8 @@
         v-for="(value, name) in result"
         :key="name"
         class="mx-2 my-2 flex-grow-1"
+        hover
+        @click="$copyText(value).then(() => $bus.$emit('append-msg', 'Copied'))"
       >
         <v-card-title> {{ name }} </v-card-title>
         <v-card-text>

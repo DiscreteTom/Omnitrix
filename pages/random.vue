@@ -1,9 +1,16 @@
 <template>
   <div>
-    <v-card>
+    <v-card
+      @click="$copyText(number).then(() => $bus.$emit('append-msg', 'Copied'))"
+    >
       <v-card-title> Random Integer </v-card-title>
       <v-card-text>
-        <div class="d-flex align-center">
+        <div
+          class="d-flex align-center"
+          @click.stop
+          @input.stop
+          @mousedown.stop
+        >
           <v-text-field
             label="Min (Inclusive)"
             v-model="numberFrom"

@@ -36,6 +36,8 @@
         v-for="(value, name) in result"
         :key="name"
         class="mx-2 my-2 flex-grow-1"
+        hover
+        @click="$copyText(value).then(() => $bus.$emit('append-msg', 'Copied'))"
       >
         <v-card-title> {{ name }} </v-card-title>
         <v-card-text>
@@ -47,6 +49,10 @@
         v-for="(item, i) in custom"
         :key="i"
         class="mx-2 my-2 flex-grow-1"
+        hover
+        @click="
+          $copyText(item.txt).then(() => $bus.$emit('append-msg', 'Copied'))
+        "
       >
         <v-card-title>
           <v-text-field
@@ -58,8 +64,9 @@
             hide-details
             class="mr-3"
             @input="calculate"
+            @click.stop
           />
-          <v-btn icon @click="custom.pop(i)">
+          <v-btn icon @click.stop="custom.pop(i)">
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-card-title>

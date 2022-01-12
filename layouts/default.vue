@@ -36,9 +36,9 @@
           <v-btn
             icon
             v-on="on"
-            :data-clipboard-text="url"
-            id="share-btn"
-            class="show-copy-msg"
+            @click="
+              $copyText(getUrl()).then(() => $bus.$emit('append-msg', 'Copied'))
+            "
           >
             <v-icon>mdi-share-variant</v-icon>
           </v-btn>
@@ -67,7 +67,6 @@
 </template>
 
 <script>
-import ClipboardJS from "clipboard";
 import VSnackbars from "v-snackbars";
 
 export default {
@@ -77,8 +76,6 @@ export default {
   data() {
     return {
       leftDrawer: true,
-      isMounted: false,
-      clipboard: null,
       messages: [],
       pages: [
         {
@@ -109,23 +106,13 @@ export default {
       ],
     };
   },
-  computed: {
-    url() {
-      return this.isMounted ? window.location.href : "";
+  methods: {
+    getUrl() {
+      return window.location.href;
     },
   },
   mounted() {
-    this.isMounted = true;
-    this.clipboard = new ClipboardJS("#share-btn");
-    this.clipboard.on("success", (e) => {
-      if (Array.from(e.trigger.classList).includes("show-copy-msg")) {
-        this.$bus.$emit("append-msg", "Copied");
-      }
-    });
     this.$bus.$on("append-msg", (e) => this.messages.push(e));
-  },
-  destroyed() {
-    delete this.clipboard;
   },
 };
 </script>

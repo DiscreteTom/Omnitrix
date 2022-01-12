@@ -20,9 +20,12 @@
                 <template v-slot:activator="{ on }">
                   <v-btn
                     icon
-                    class="clipboard-btn"
-                    :data-clipboard-text="leftTxt"
                     v-on="on"
+                    @click="
+                      $copyText(leftTxt).then(() =>
+                        $bus.$emit('append-msg', 'Copied')
+                      )
+                    "
                   >
                     <v-icon> mdi-content-copy </v-icon>
                   </v-btn>
@@ -84,9 +87,12 @@
                 <template v-slot:activator="{ on }">
                   <v-btn
                     icon
-                    class="clipboard-btn"
-                    :data-clipboard-text="rightTxt"
                     v-on="on"
+                    @click="
+                      $copyText(rightTxt).then(() =>
+                        $bus.$emit('append-msg', 'Copied')
+                      )
+                    "
                   >
                     <v-icon> mdi-content-copy </v-icon>
                   </v-btn>
@@ -111,7 +117,6 @@
 
 <script>
 import CodeJar from "vue-codejar";
-import ClipboardJS from "clipboard";
 
 export default {
   components: { CodeJar },
@@ -148,7 +153,6 @@ export default {
       right: "",
       leftTxt: "",
       rightTxt: "",
-      clipboard: null,
       live: true,
     };
   },
@@ -167,12 +171,8 @@ export default {
     },
   },
   mounted() {
-    this.clipboard = new ClipboardJS(".clipboard-btn");
     this.left = this.leftValue;
     this.right = this.rightValue;
-  },
-  destroyed() {
-    delete this.clipboard;
   },
   watch: {
     left(val, old) {
