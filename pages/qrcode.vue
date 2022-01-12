@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div style="height: 80vh" class="d-flex justify-center align-center">
+    <div
+      style="height: 80vh"
+      class="d-flex justify-center align-center flex-wrap"
+    >
       <v-textarea
         v-model="value"
         label="QR Code Content"

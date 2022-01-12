@@ -4,7 +4,7 @@
     <div class="mx-2">
       <div class="d-flex mb-3">
         <v-row no-gutters>
-          <v-col cols="4">
+          <v-col :cols="$vuetify.breakpoint.smAndUp ? 4 : 12">
             <v-select
               label="From"
               :items="formats"
@@ -12,17 +12,17 @@
               dense
               hide-details
               v-model="fromFormat"
-              class="mr-3"
+              :class="$vuetify.breakpoint.smAndUp ? 'mr-3' : 'mb-3'"
             />
           </v-col>
-          <v-col cols="8">
+          <v-col :cols="$vuetify.breakpoint.smAndUp ? 8 : 12">
             <v-text-field
               label="Value"
               v-model="fromValue"
               outlined
               dense
               hide-details
-              class="mr-3"
+              :class="$vuetify.breakpoint.smAndUp ? 'mr-3' : 'mb-3'"
               @input="calculate"
             />
           </v-col>

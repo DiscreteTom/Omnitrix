@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <!-- from -->
-      <v-col cols="6">
+      <v-col :cols="$vuetify.breakpoint.smAndUp ? 6 : 12">
         <v-card>
           <v-card-text>
             <div class="d-flex align-center mb-3">
@@ -45,7 +45,7 @@
       </v-col>
 
       <!-- to -->
-      <v-col cols="6">
+      <v-col :cols="$vuetify.breakpoint.smAndUp ? 6 : 12">
         <v-card>
           <v-card-text>
             <div class="d-flex align-center mb-3">

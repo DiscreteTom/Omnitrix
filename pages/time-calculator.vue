@@ -4,6 +4,7 @@
     <div class="mx-2">
       <v-switch v-model="live" label="Live" inset class="mt-0 mx-2" />
 
+      <!-- live -->
       <div v-if="live" class="d-flex mb-3">
         <v-text-field
           type="number"
@@ -24,9 +25,10 @@
         </v-tooltip>
       </div>
 
+      <!-- manual -->
       <div v-else class="d-flex mb-3">
         <v-row no-gutters>
-          <v-col cols="4">
+          <v-col :cols="$vuetify.breakpoint.smAndUp ? 4 : 12">
             <v-select
               label="From"
               :items="formats"
@@ -34,29 +36,29 @@
               dense
               hide-details
               v-model="fromFormat"
-              class="mr-3"
+              :class="$vuetify.breakpoint.smAndUp ? 'mr-3' : 'mb-3'"
             />
           </v-col>
-          <v-col cols="8">
+          <v-col :cols="$vuetify.breakpoint.smAndUp ? 8 : 12" class="d-flex">
             <v-text-field
               label="Value"
               v-model="fromValue"
               outlined
               dense
               hide-details
-              class="mr-3"
+              :class="$vuetify.breakpoint.smAndUp ? 'mr-3' : 'mb-3'"
               @keydown.enter="calculate"
             />
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-btn icon v-on="on" @click="calculate">
+                  <v-icon> mdi-check </v-icon>
+                </v-btn>
+              </template>
+              <span> Calculate </span>
+            </v-tooltip>
           </v-col>
         </v-row>
-        <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on" @click="calculate">
-              <v-icon> mdi-check </v-icon>
-            </v-btn>
-          </template>
-          <span> Calculate </span>
-        </v-tooltip>
       </div>
     </div>
 
