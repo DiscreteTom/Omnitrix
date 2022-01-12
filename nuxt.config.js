@@ -30,6 +30,7 @@ export default {
   plugins: [
     { src: "@/plugins/prism.js", mode: "client" },
     { src: "@/plugins/bus.js" },
+    { src: "@/plugins/clipboard.js" },
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
