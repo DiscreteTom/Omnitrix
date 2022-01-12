@@ -90,8 +90,13 @@ export default {
         },
         {
           to: "/text-codec",
-          icon: "mdi-code-tags",
+          icon: "mdi-message-text-lock-outline",
           text: "Text Codec",
+        },
+        {
+          to: "/code-reader",
+          icon: "mdi-code-tags",
+          text: "Code Reader",
         },
         {
           to: "/number-convertor",
