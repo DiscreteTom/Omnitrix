@@ -9,7 +9,11 @@
         hide-details
         class="mx-3"
       />
-      <div style="border: solid 1px white" class="mx-3">
+      <div
+        style="border: solid 1px white"
+        class="mx-3"
+        :style="`height: ${size + 2}px`"
+      >
         <qrcode-vue :value="value" :size="size" level="H" />
       </div>
     </div>
