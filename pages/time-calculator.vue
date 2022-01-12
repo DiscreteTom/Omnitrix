@@ -65,9 +65,13 @@
       <v-card
         v-for="(value, name) in result"
         :key="name"
-        class="mx-2 my-2 flex-grow-1"
+        class="mx-2 my-2 flex-grow-1 clipboard-btn show-copy-msg"
+        hover
+        :data-clipboard-text="value"
       >
-        <v-card-title> {{ name }} </v-card-title>
+        <v-card-title>
+          {{ name }}
+        </v-card-title>
         <v-card-text>
           {{ value }}
         </v-card-text>
@@ -112,6 +116,8 @@
 </template>
 
 <script>
+import ClipboardJS from "clipboard";
+
 export default {
   data() {
     return {
@@ -482,6 +488,8 @@ export default {
         "Africa/Johannesburg",
       ],
       custom: [], // {tz: '', txt: ''}
+
+      clipboard: null,
     };
   },
   methods: {
@@ -528,10 +536,18 @@ export default {
     },
   },
   mounted() {
+    this.clipboard = new ClipboardJS(".clipboard-btn");
+    this.clipboard.on("success", (e) => {
+      if (Array.from(e.trigger.classList).includes("show-copy-msg")) {
+        this.$bus.$emit("append-msg", "Copied");
+      }
+    });
+
     this.applyTimer();
   },
   destroyed() {
     this.clearTimer();
+    delete this.clipboard;
   },
   watch: {
     live(val) {

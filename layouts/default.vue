@@ -33,7 +33,13 @@
       <!-- Share Btn -->
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" :data-clipboard-text="url" id="share-btn">
+          <v-btn
+            icon
+            v-on="on"
+            :data-clipboard-text="url"
+            id="share-btn"
+            class="show-copy-msg"
+          >
             <v-icon>mdi-share-variant</v-icon>
           </v-btn>
         </template>
@@ -50,18 +56,30 @@
     <v-footer inset absolute app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
+
+    <v-snackbars
+      :messages.sync="messages"
+      :timeout="5000"
+      bottom
+      right
+    ></v-snackbars>
   </v-app>
 </template>
 
 <script>
 import ClipboardJS from "clipboard";
+import VSnackbars from "v-snackbars";
 
 export default {
+  components: {
+    "v-snackbars": VSnackbars,
+  },
   data() {
     return {
       leftDrawer: true,
       isMounted: false,
       clipboard: null,
+      messages: [],
       pages: [
         {
           to: "/data-transformer",
@@ -99,6 +117,12 @@ export default {
   mounted() {
     this.isMounted = true;
     this.clipboard = new ClipboardJS("#share-btn");
+    this.clipboard.on("success", (e) => {
+      if (Array.from(e.trigger.classList).includes("show-copy-msg")) {
+        this.$bus.$emit("append-msg", "Copied");
+      }
+    });
+    this.$bus.$on("append-msg", (e) => this.messages.push(e));
   },
   destroyed() {
     delete this.clipboard;
