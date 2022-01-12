@@ -27,7 +27,10 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [{ src: "@/plugins/prism.js", mode: "client" }],
+  plugins: [
+    { src: "@/plugins/prism.js", mode: "client" },
+    { src: "@/plugins/bus.js" },
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
