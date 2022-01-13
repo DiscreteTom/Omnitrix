@@ -38,7 +38,6 @@ import cssParser from "prettier/parser-postcss";
 import yamlParser from "prettier/parser-yaml";
 import htmlParser from "prettier/parser-html";
 import xmlParser from "@prettier/plugin-xml";
-import javaParser from "prettier-plugin-java";
 
 export default {
   components: { CodeJar },
@@ -72,19 +71,10 @@ export default {
     formatCode() {
       let result;
       let parser = "";
-      let plugins = [
-        babelParser,
-        htmlParser,
-        xmlParser,
-        cssParser,
-        yamlParser,
-        javaParser,
-      ];
+      let plugins = [babelParser, htmlParser, xmlParser, cssParser, yamlParser];
       if (this.lang == "javascript") {
         parser = "babel";
-      } else if (
-        ["json", "html", "xml", "css", "yaml", "java"].includes(this.lang)
-      ) {
+      } else if (["json", "html", "xml", "css", "yaml"].includes(this.lang)) {
         parser = this.lang;
       } else {
         this.$bus.$emit(

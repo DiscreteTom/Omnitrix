@@ -26,7 +26,6 @@
     "js-yaml": "^4.1.0",
     "nuxt": "^2.15.8",
     "prettier": "^2.5.1",
-    "prettier-plugin-java": "^1.6.1",
     "prismjs": "^1.26.0",
     "qrcode.vue": "1",
     "v-snackbars": "^3.2.4",
