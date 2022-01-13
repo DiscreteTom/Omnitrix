@@ -62,6 +62,7 @@
       :timeout="5000"
       bottom
       right
+      app
     ></v-snackbars>
   </v-app>
 </template>
