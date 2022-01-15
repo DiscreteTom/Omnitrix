@@ -12,11 +12,19 @@
       />
       <v-tooltip top>
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on" @click="formatCode">
+          <v-btn icon v-on="on" @click="formatCode" class="mr-2">
             <v-icon>mdi-code-json</v-icon>
           </v-btn>
         </template>
         <span>Format Code</span>
+      </v-tooltip>
+      <v-tooltip top>
+        <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" @click="fullscreen = true">
+            <v-icon>mdi-arrow-expand</v-icon>
+          </v-btn>
+        </template>
+        <span>Fullscreen</span>
       </v-tooltip>
     </div>
     <code-jar
@@ -27,6 +35,46 @@
       :lang="lang"
       line-numbers
     />
+
+    <v-dialog fullscreen v-model="fullscreen">
+      <v-card v-if="fullscreen" class="d-flex flex-column">
+        <v-toolbar class="flex-grow-0" dense>
+          <v-toolbar-title> Omnitrix - Code Reader </v-toolbar-title>
+          <v-spacer />
+
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn icon v-on="on" @click="formatCode">
+                <v-icon>mdi-code-json</v-icon>
+              </v-btn>
+            </template>
+            <span>Format Code</span>
+          </v-tooltip>
+
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-btn icon @click="fullscreen = false" v-on="on">
+                <v-icon> mdi-close </v-icon>
+              </v-btn>
+            </template>
+            <span>Exit Fullscreen</span>
+          </v-tooltip>
+        </v-toolbar>
+        <div ref="fullscreen-codejar" class="flex-grow-1">
+          <code-jar
+            @input="codeCache = $event"
+            :value="code"
+            :codeStyle="`background: #272822;
+              height: ${fullscreenEditorHeight}px;
+              border-top-left-radius: 0px;
+              border-bottom-left-radius: 0px`"
+            :highlighter="highlighter"
+            :lang="lang"
+            line-numbers
+          />
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -56,8 +104,10 @@ export default {
       ],
       lang: "javascript",
       editorHeight: 340,
+      fullscreenEditorHeight: 0,
       code: "let a = 123;",
       codeCache: "",
+      fullscreen: false,
     };
   },
   methods: {
@@ -99,6 +149,23 @@ export default {
   mounted() {
     this.updateEditorHeight();
     this.codeCache = this.code;
+  },
+  watch: {
+    fullscreen(val) {
+      if (val) {
+        let f = () => {
+          setTimeout(() => {
+            let e = this.$refs["fullscreen-codejar"];
+            if (e && e.offsetHeight !== 0) {
+              this.fullscreenEditorHeight = e.offsetHeight;
+            } else {
+              f();
+            }
+          }, 10);
+        };
+        f();
+      }
+    },
   },
 };
 </script>
