@@ -44,8 +44,12 @@ jobs:
       - name: Build
         run: yarn generate
 
+      - run: cat ./dist/_nuxt/manifest*
+
       - name: fix PWA background color
         run: sed -i s/#ffffff/#181818/g ./dist/_nuxt/manifest*
+
+      - run: cat ./dist/_nuxt/manifest*
 
       - name: deploy
         uses: peaceiris/actions-gh-pages@v3
