@@ -35,12 +35,14 @@ export default {
     open() {
       this.opening = true;
       this.err = "";
+
       this.$axios
         .get(this.url)
         .then((res) => {
           this.$emit("open", res.data);
           this.opening = false;
           this.show = false;
+          this.url = "";
         })
         .catch((e) => {
           this.opening = false;
