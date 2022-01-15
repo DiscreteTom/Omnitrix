@@ -21,6 +21,19 @@
                   <v-btn
                     icon
                     v-on="on"
+                    @click="showOpenUrl = true"
+                    class="mr-2"
+                  >
+                    <v-icon>mdi-file-import-outline</v-icon>
+                  </v-btn>
+                </template>
+                <span>Open From URL</span>
+              </v-tooltip>
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    v-on="on"
                     @click="
                       $copyText(leftTxt).then(() =>
                         $bus.$emit('append-msg', 'Copied')
@@ -35,6 +48,7 @@
             </div>
             <code-jar
               @input="onInput"
+              ref="leftJar"
               codeStyle="background:#272822;"
               :highlighter="highlighter"
               :lang="leftLang"
@@ -112,14 +126,23 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <open-external
+      v-model="showOpenUrl"
+      @open="
+        $refs.leftJar.jar.updateCode($event);
+        onInput($event);
+      "
+    />
   </div>
 </template>
 
 <script>
 import CodeJar from "vue-codejar";
+import OpenExternal from "../components/open-external.vue";
 
 export default {
-  components: { CodeJar },
+  components: { CodeJar, OpenExternal },
   props: {
     leftLabel: { type: String, default: "From" },
     rightLabel: {
@@ -154,6 +177,7 @@ export default {
       leftTxt: "",
       rightTxt: "",
       live: true,
+      showOpenUrl: false,
     };
   },
   methods: {
