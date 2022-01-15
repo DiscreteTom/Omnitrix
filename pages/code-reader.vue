@@ -12,6 +12,14 @@
       />
       <v-tooltip top>
         <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" @click="showOpenUrl = true" class="mr-2">
+            <v-icon>mdi-file-import-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Open From URL</span>
+      </v-tooltip>
+      <v-tooltip top>
+        <template v-slot:activator="{ on }">
           <v-btn icon v-on="on" @click="formatCode" class="mr-2">
             <v-icon>mdi-code-json</v-icon>
           </v-btn>
@@ -75,6 +83,8 @@
         </div>
       </v-card>
     </v-dialog>
+
+    <open-external v-model="showOpenUrl" @open="code = $event" />
   </div>
 </template>
 
@@ -86,9 +96,10 @@ import cssParser from "prettier/parser-postcss";
 import yamlParser from "prettier/parser-yaml";
 import htmlParser from "prettier/parser-html";
 import xmlParser from "@prettier/plugin-xml";
+import OpenExternal from "../components/open-external.vue";
 
 export default {
-  components: { CodeJar },
+  components: { CodeJar, OpenExternal },
   data() {
     return {
       languages: [
@@ -108,6 +119,7 @@ export default {
       code: "let a = 123;",
       codeCache: "",
       fullscreen: false,
+      showOpenUrl: false,
     };
   },
   methods: {
@@ -151,6 +163,9 @@ export default {
     this.codeCache = this.code;
   },
   watch: {
+    code(val) {
+      this.codeCache = val;
+    },
     fullscreen(val) {
       if (val) {
         let f = () => {
