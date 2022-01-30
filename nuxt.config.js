@@ -19,7 +19,7 @@ export default {
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { hid: "description", name: "description", content: "" },
       { name: "format-detection", content: "telephone=no" },
-      { name: "theme-color", content: "#181818" },
+      { name: "theme-color", content: "#121212" },
     ],
     link: [{ rel: "icon", type: "image/png", href: "/icon.png" }],
   },
@@ -75,7 +75,7 @@ export default {
 
   pwa: {
     meta: {
-      theme_color: "#181818",
+      theme_color: "#121212",
     },
   },
 };
