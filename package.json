@@ -22,6 +22,7 @@
     "@prettier/plugin-xml": "^1.2.0",
     "codejar": "^3.5.0",
     "core-js": "^3.19.3",
+    "ip-cidr": "^3.0.4",
     "js-base64": "^3.7.2",
     "js-md5": "^0.7.3",
     "js-yaml": "^4.1.0",
