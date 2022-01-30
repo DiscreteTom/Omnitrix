@@ -48,7 +48,7 @@
   ],
   "start_url": "/Omnitrix/?standalone=true",
   "display": "standalone",
-  "background_color": "#181818",
-  "theme_color": "#181818",
+  "background_color": "#121212",
+  "theme_color": "#121212",
   "lang": "en"
 }
