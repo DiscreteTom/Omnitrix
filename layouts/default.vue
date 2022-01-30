@@ -59,25 +59,41 @@
 
     <v-snackbars
       :messages.sync="messages"
-      :timeout="5000"
+      :timeout="msgTimeout"
       bottom
       right
       app
-    ></v-snackbars>
+    >
+      <template v-slot:action="{ close }">
+        <timeout-progress
+          color="white"
+          :width="2"
+          :timeout="msgTimeout"
+          :rotate="-90"
+        >
+          <v-btn icon @click="close()">
+            <v-icon> mdi-close </v-icon>
+          </v-btn>
+        </timeout-progress>
+      </template>
+    </v-snackbars>
   </v-app>
 </template>
 
 <script>
 import VSnackbars from "v-snackbars";
+import TimeoutProgress from "../components/timeout-progress.vue";
 
 export default {
   components: {
     "v-snackbars": VSnackbars,
+    TimeoutProgress,
   },
   data() {
     return {
       leftDrawer: true,
       messages: [],
+      msgTimeout: 5000,
       pages: [
         {
           to: "/data-transformer",
