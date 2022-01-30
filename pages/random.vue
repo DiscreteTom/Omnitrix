@@ -1,10 +1,6 @@
 <template>
   <div>
-    <v-card
-      @click="$copyText(number).then(() => $bus.$emit('append-msg', 'Copied'))"
-      height="80vh"
-      class="d-flex flex-column"
-    >
+    <v-card height="80vh" class="d-flex flex-column">
       <v-card-title> Random Integer </v-card-title>
       <v-card-text class="flex-grow-1 d-flex flex-column">
         <div
@@ -24,7 +20,7 @@
             @keydown.enter="getNumber"
           />
           <v-text-field
-            class="mx-2"
+            class="ml-2"
             label="Max (Inclusive)"
             v-model="numberTo"
             outlined
@@ -34,15 +30,15 @@
             type="number"
             @keydown.enter="getNumber"
           />
-          <v-btn icon @click="getNumber">
-            <v-icon> mdi-check </v-icon>
-          </v-btn>
         </div>
-        <div class="d-flex justify-center align-center flex-grow-1">
+        <v-card
+          @click="getNumber"
+          class="d-flex justify-center align-center flex-grow-1 mt-3"
+        >
           <span style="font-size: 150px">
             {{ number }}
           </span>
-        </div>
+        </v-card>
       </v-card-text>
     </v-card>
   </div>
