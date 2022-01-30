@@ -100,6 +100,11 @@ export default {
           text: "Code Reader",
         },
         {
+          to: "/cidr-calculator",
+          icon: "mdi-web",
+          text: "CIDR Calculator",
+        },
+        {
           to: "/number-convertor",
           icon: "mdi-hexadecimal",
           text: "Number Convertor",
