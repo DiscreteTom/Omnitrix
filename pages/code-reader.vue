@@ -20,6 +20,14 @@
       </v-tooltip>
       <v-tooltip top>
         <template v-slot:activator="{ on }">
+          <v-btn icon v-on="on" @click="$refs.fileInput.click()" class="mr-2">
+            <v-icon>mdi-folder-open-outline</v-icon>
+          </v-btn>
+        </template>
+        <span>Open File</span>
+      </v-tooltip>
+      <v-tooltip top>
+        <template v-slot:activator="{ on }">
           <v-btn icon v-on="on" @click="formatCode" class="mr-2">
             <v-icon>mdi-code-json</v-icon>
           </v-btn>
@@ -85,6 +93,13 @@
     </v-dialog>
 
     <open-external v-model="showOpenUrl" @open="code = $event" />
+
+    <input
+      type="file"
+      ref="fileInput"
+      style="display: none"
+      @input="fileChosen"
+    />
   </div>
 </template>
 
@@ -129,6 +144,16 @@ export default {
     updateEditorHeight() {
       this.editorHeight =
         this.$refs.root.offsetHeight - this.$refs.controls.offsetHeight;
+    },
+    fileChosen(event) {
+      let file = event.target.files[0];
+      if (file) {
+        var reader = new FileReader();
+        reader.readAsText(file, "UTF-8");
+        reader.onload = (evt) => {
+          this.code = evt.target.result;
+        };
+      }
     },
     formatCode() {
       let result;
