@@ -97,10 +97,13 @@
           hide-details
         />
         <v-text-field
-          label="Static IP"
+          label="Static IP with Prefix Length"
           v-model="info.staticIp"
           outlined
           dense
+          :rules="[
+            (value) => value.includes('/') && value.split('/')[1].length > 0,
+          ]"
           hide-details
           :disabled="!info.ipIsStatic"
           class="mb-3"
