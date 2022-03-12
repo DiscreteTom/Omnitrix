@@ -25,6 +25,7 @@
                 label="Accept All Devices"
                 inset
                 hide-details
+                class="mb-3"
               />
               <v-text-field
                 :disabled="acceptAllDevices"
@@ -97,7 +98,9 @@
           class="mb-3"
           placeholder="192.168.0.1/24"
         />
-        <v-btn block> Save Configuration </v-btn>
+        <v-btn block @click="save" :loading="saving">
+          Save Configuration
+        </v-btn>
       </v-card-text>
     </v-card>
   </div>
@@ -126,6 +129,7 @@ export default {
         staticIp: "",
       },
       showPsk: false,
+      saving: false,
     };
   },
   methods: {
@@ -166,9 +170,36 @@ export default {
         this.info.staticIp = info.StaticIP;
       } catch (e) {
         console.log(e);
+        this.$bus.$emit("append-msg", e);
+        this.device = null;
         this.server = null;
       } finally {
         this.loading = false;
+      }
+    },
+    async save() {
+      if (!this.server?.connected) {
+        this.$bus.$emit("append-msg", "BLE server disconnected.");
+        this.device = null;
+        this.server = null;
+        return;
+      }
+      this.saving = true;
+      try {
+        let result = {
+          SSID: this.info.ssid,
+          PSK: this.info.psk,
+          Static: this.info.ipIsStatic,
+          StaticIP: this.info.staticIp,
+        };
+        let encoder = new TextEncoder();
+        await this.char.writeValue(encoder.encode(JSON.stringify(result)));
+        this.$bus.$emit("append-msg", "Saved.");
+      } catch (e) {
+        console.log(e);
+        this.$bus.$emit("append-msg", e);
+      } finally {
+        this.saving = false;
       }
     },
   },
