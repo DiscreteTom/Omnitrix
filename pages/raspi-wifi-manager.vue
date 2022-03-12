@@ -116,9 +116,10 @@
           class="mb-3"
           placeholder="192.168.0.1"
         />
-        <v-btn block @click="save" :loading="saving">
+        <v-btn block @click="save" :loading="saving" class="mb-3">
           Save Configuration
         </v-btn>
+        <v-btn block @click="refresh" :loading="refreshing"> Refresh </v-btn>
       </v-card-text>
     </v-card>
   </div>
@@ -159,6 +160,7 @@ export default {
       },
       showPsk: false,
       saving: false,
+      refreshing: false,
     };
   },
   methods: {
@@ -190,21 +192,7 @@ export default {
 
         this.$bus.$emit("append-msg", "Getting characteristic...");
         this.char = await this.service.getCharacteristic(charUUID);
-
-        this.$bus.$emit("append-msg", "Getting information...");
-        let res = await this.char.readValue();
-        let decoder = new TextDecoder("utf-8");
-        let info = JSON.parse(decoder.decode(res.buffer));
-        this.info.ssid = info.SSID;
-        this.info.psk = info.PSK;
-        this.info.currentIp = info.CurrentIP;
-        this.info.ipIsStatic = info.Static;
-        this.info.staticIp = info.StaticIP;
-        if (info.Static) {
-          this.info.staticRouter = info.Router;
-        }
-        this.info.router = info.Router;
-        this.oldInfo = JSON.parse(JSON.stringify(this.info)); // deep copy
+        this.refresh();
       } catch (e) {
         console.log(e);
         this.disconnect(e);
@@ -252,6 +240,30 @@ export default {
       } catch {}
       this.device = null;
       this.server = null;
+    },
+    async refresh() {
+      this.refreshing = true;
+      try {
+        this.$bus.$emit("append-msg", "Getting information...");
+        let res = await this.char.readValue();
+        let decoder = new TextDecoder("utf-8");
+        let info = JSON.parse(decoder.decode(res.buffer));
+        this.info.ssid = info.SSID;
+        this.info.psk = info.PSK;
+        this.info.currentIp = info.CurrentIP;
+        this.info.ipIsStatic = info.Static;
+        this.info.staticIp = info.StaticIP;
+        if (info.Static) {
+          this.info.staticRouter = info.Router;
+        }
+        this.info.router = info.Router;
+        this.oldInfo = JSON.parse(JSON.stringify(this.info)); // deep copy
+        this.$bus.$emit("append-msg", "Updated.");
+      } catch (e) {
+        this.disconnect(e);
+      } finally {
+        this.refreshing = false;
+      }
     },
   },
 };
