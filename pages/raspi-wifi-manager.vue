@@ -255,6 +255,8 @@ export default {
         this.info.staticIp = info.StaticIP;
         if (info.Static) {
           this.info.staticRouter = info.Router;
+        } else {
+          this.info.staticRouter = "";
         }
         this.info.router = info.Router;
         this.oldInfo = JSON.parse(JSON.stringify(this.info)); // deep copy
