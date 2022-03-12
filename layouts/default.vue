@@ -135,6 +135,11 @@ export default {
           icon: "mdi-qrcode",
           text: "QR Code",
         },
+        {
+          to: "/raspi-wifi-manager",
+          icon: "mdi-bluetooth-settings",
+          text: "Raspi Wifi Manager",
+        },
       ],
     };
   },
