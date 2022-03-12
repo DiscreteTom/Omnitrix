@@ -49,7 +49,7 @@
       </v-card-text>
     </v-card>
 
-    <v-card :disabled="device == null">
+    <v-card :disabled="server == null">
       <v-card-title> Raspberry Pi </v-card-title>
       <v-card-text>
         <v-text-field
@@ -79,7 +79,15 @@
           hide-details
           disabled
           class="mb-3"
-          placeholder="192.168.0.1"
+        />
+        <v-text-field
+          label="Current Router"
+          v-model="info.router"
+          outlined
+          dense
+          hide-details
+          disabled
+          class="mb-3"
         />
         <v-switch
           v-model="info.ipIsStatic"
@@ -96,7 +104,17 @@
           hide-details
           :disabled="!info.ipIsStatic"
           class="mb-3"
-          placeholder="192.168.0.1/24"
+          placeholder="192.168.0.123/24"
+        />
+        <v-text-field
+          label="Static Router"
+          v-model="info.staticRouter"
+          outlined
+          dense
+          hide-details
+          :disabled="!info.ipIsStatic"
+          class="mb-3"
+          placeholder="192.168.0.1"
         />
         <v-btn block @click="save" :loading="saving">
           Save Configuration
@@ -127,6 +145,17 @@ export default {
         currentIp: "",
         ipIsStatic: false,
         staticIp: "",
+        router: "",
+        staticRouter: "",
+      },
+      oldInfo: {
+        ssid: "",
+        psk: "",
+        currentIp: "",
+        ipIsStatic: false,
+        staticIp: "",
+        router: "",
+        staticRouter: "",
       },
       showPsk: false,
       saving: false,
@@ -149,6 +178,9 @@ export default {
           filters: [filter],
           optionalServices: [serviceUUID],
         });
+        this.device.addEventListener("gattserverdisconnected", () => {
+          this.disconnect("Raspi disconnected.");
+        });
 
         this.$bus.$emit("append-msg", "Connecting...");
         this.server = await this.device.gatt.connect();
@@ -168,20 +200,21 @@ export default {
         this.info.currentIp = info.CurrentIP;
         this.info.ipIsStatic = info.Static;
         this.info.staticIp = info.StaticIP;
+        if (info.Static) {
+          this.info.staticRouter = info.Router;
+        }
+        this.info.router = info.Router;
+        this.oldInfo = JSON.parse(JSON.stringify(this.info)); // deep copy
       } catch (e) {
         console.log(e);
-        this.$bus.$emit("append-msg", e);
-        this.device = null;
-        this.server = null;
+        this.disconnect(e);
       } finally {
         this.loading = false;
       }
     },
     async save() {
       if (!this.server?.connected) {
-        this.$bus.$emit("append-msg", "BLE server disconnected.");
-        this.device = null;
-        this.server = null;
+        this.disconnect("BLE server disconnected.");
         return;
       }
       this.saving = true;
@@ -191,16 +224,34 @@ export default {
           PSK: this.info.psk,
           Static: this.info.ipIsStatic,
           StaticIP: this.info.staticIp,
+          Router: this.info.staticRouter,
         };
         let encoder = new TextEncoder();
         await this.char.writeValue(encoder.encode(JSON.stringify(result)));
         this.$bus.$emit("append-msg", "Saved.");
+
+        if (
+          (!this.info.ipIsStatic && this.oldInfo.ipIsStatic) ||
+          (this.info.ipIsStatic &&
+            (this.info.staticIp != this.oldInfo.staticIp ||
+              this.info.staticRouter != this.oldInfo.staticRouter))
+        ) {
+          this.disconnect("Raspi will reboot. Disconnected.");
+        }
       } catch (e) {
         console.log(e);
-        this.$bus.$emit("append-msg", e);
+        this.disconnect(e);
       } finally {
         this.saving = false;
       }
+    },
+    disconnect(e) {
+      this.$bus.$emit("append-msg", e);
+      try {
+        this.device.gatt.disconnect();
+      } catch {}
+      this.device = null;
+      this.server = null;
     },
   },
 };
