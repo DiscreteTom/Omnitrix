@@ -133,7 +133,12 @@ export default {
         {
           to: "/qrcode",
           icon: "mdi-qrcode",
-          text: "QR Code",
+          text: "QR Code Generator",
+        },
+        {
+          to: "/uuid-generator",
+          icon: "mdi-numeric",
+          text: "UUID Generator",
         },
         {
           to: "/raspi-wifi-manager",
