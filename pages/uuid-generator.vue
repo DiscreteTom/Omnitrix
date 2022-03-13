@@ -2,7 +2,7 @@
   <div>
     <v-card
       @click="$copyText(nil).then(() => $bus.$emit('append-msg', 'Copied'))"
-      class="mb-3"
+      class="mx-3 my-3"
     >
       <v-card-title> NIL </v-card-title>
       <v-card-subtitle> All zeros </v-card-subtitle>
@@ -20,7 +20,7 @@
     </v-card>
     <v-card
       @click="$copyText(v1txt).then(() => $bus.$emit('append-msg', 'Copied'))"
-      class="mb-3"
+      class="mx-3 my-3"
     >
       <v-card-title> UUID v1 </v-card-title>
       <v-card-subtitle> Timestamp </v-card-subtitle>
@@ -41,7 +41,7 @@
     </v-card>
     <v-card
       @click="$copyText(v3txt).then(() => $bus.$emit('append-msg', 'Copied'))"
-      class="mb-3"
+      class="mx-3 my-3"
     >
       <v-card-title> UUID v3 </v-card-title>
       <v-card-subtitle> MD5 </v-card-subtitle>
@@ -79,7 +79,7 @@
     </v-card>
     <v-card
       @click="$copyText(v4txt).then(() => $bus.$emit('append-msg', 'Copied'))"
-      class="mb-3"
+      class="mx-3 my-3"
     >
       <v-card-title> UUID v4 </v-card-title>
       <v-card-subtitle> Random </v-card-subtitle>
@@ -100,7 +100,7 @@
     </v-card>
     <v-card
       @click="$copyText(v5txt).then(() => $bus.$emit('append-msg', 'Copied'))"
-      class="mb-3"
+      class="mx-3 my-3"
     >
       <v-card-title> UUID v5 </v-card-title>
       <v-card-subtitle> SHA1 </v-card-subtitle>
