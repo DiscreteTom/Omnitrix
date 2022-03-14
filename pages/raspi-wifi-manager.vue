@@ -172,7 +172,7 @@ export default {
 
       let namespaceUUID = uuidv5("discretetom.github.io", uuidv5.DNS);
       let serviceUUID = uuidv5(this.secret, namespaceUUID);
-      let charUUID = uuidv5("info", serviceUUID);
+      let wifiCharUUID = uuidv5("wifi", serviceUUID);
 
       let filter = {};
       if (this.acceptAllDevices) filter.acceptAllDevices = true;
@@ -194,7 +194,7 @@ export default {
         this.service = await this.server.getPrimaryService(serviceUUID);
 
         this.$bus.$emit("append-msg", "Getting characteristic...");
-        this.char = await this.service.getCharacteristic(charUUID);
+        this.char = await this.service.getCharacteristic(wifiCharUUID);
         this.refresh();
       } catch (e) {
         console.log(e);
