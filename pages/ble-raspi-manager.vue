@@ -176,7 +176,7 @@ export default {
       secret: "Omnitrix",
       showSecret: false,
       acceptAllDevices: false,
-      namePrefix: "Raspi Wifi Manager",
+      namePrefix: "BLE Raspi Manager",
       loading: false,
       device: null,
       server: null,

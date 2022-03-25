@@ -141,9 +141,9 @@ export default {
           text: "UUID Generator",
         },
         {
-          to: "/raspi-wifi-manager",
+          to: "/ble-raspi-manager",
           icon: "mdi-bluetooth-settings",
-          text: "Raspi Wifi Manager",
+          text: "BLE Raspi Manager",
         },
       ],
     };
