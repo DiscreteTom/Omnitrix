@@ -323,26 +323,36 @@ export default {
       result.loading = true;
       this.cmdResults.unshift(result);
 
-      let txt = "";
+      let buffer = new Uint8Array();
+      let decoder = new TextDecoder("utf-8");
       while (true) {
-        // sleep
+        // wait for command execution
         await new Promise((r) => setTimeout(r, 1000));
 
         let res = await this.cmdChar.readValue();
-        let decoder = new TextDecoder("utf-8");
-        txt += decoder.decode(res.buffer);
-        try {
-          let info = JSON.parse(txt);
-          if (info.UUID == result.UUID) {
+        if (decoder.decode(res.buffer.slice(0, 36)) == result.UUID) {
+          if (res.buffer.byteLength == 36) {
             this.cmdResults.map((r) => {
-              if (r.UUID == info.UUID) {
+              if (r.UUID == result.UUID) {
                 r.loading = false;
-                r.Output = info.Output;
+                r.Output = decoder.decode(buffer);
               }
             });
             break;
           }
-        } catch {}
+          buffer = new Uint8Array([
+            ...buffer,
+            ...new Uint8Array(res.buffer.slice(36)),
+          ]);
+        } else {
+          this.cmdResults.map((r) => {
+            if (r.UUID == result.UUID) {
+              r.loading = false;
+              r.Output = "Error: Communication was interrupted.";
+            }
+          });
+          break;
+        }
       }
     },
   },
