@@ -168,7 +168,7 @@
 </template>
 
 <script>
-import { v5 as uuidv5 } from "uuid";
+import * as uuid from "uuid";
 
 export default {
   data() {
@@ -212,10 +212,10 @@ export default {
     async connect() {
       this.loading = true;
 
-      let namespaceUUID = uuidv5("discretetom.github.io", uuidv5.DNS);
-      let serviceUUID = uuidv5(this.secret, namespaceUUID);
-      let wifiCharUUID = uuidv5("wifi", serviceUUID);
-      let cmdCharUUID = uuidv5("cmd", serviceUUID);
+      let namespaceUUID = uuid.v5("discretetom.github.io", uuid.v5.DNS);
+      let serviceUUID = uuid.v5(this.secret, namespaceUUID);
+      let wifiCharUUID = uuid.v5("wifi", serviceUUID);
+      let cmdCharUUID = uuid.v5("cmd", serviceUUID);
 
       let filter = {};
       if (this.acceptAllDevices) filter.acceptAllDevices = true;
@@ -324,7 +324,7 @@ export default {
         // sleep
         await new Promise((r) => setTimeout(r, 1000));
 
-        await this.cmdChar.read();
+        let res = await this.cmdChar.readValue();
         let decoder = new TextDecoder("utf-8");
         let info = JSON.parse(decoder.decode(res.buffer));
         if (info.UUID == result.UUID) {
