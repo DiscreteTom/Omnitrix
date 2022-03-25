@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- ble config -->
     <v-card class="mb-3">
       <v-card-title> Bluetooth LE Configurations </v-card-title>
       <v-card-text>
@@ -49,8 +50,9 @@
       </v-card-text>
     </v-card>
 
-    <v-card :disabled="server == null">
-      <v-card-title> Raspberry Pi </v-card-title>
+    <!-- wifi management -->
+    <v-card :disabled="wifiChar == null" class="mb-3">
+      <v-card-title> Raspberry Pi Network </v-card-title>
       <v-card-text>
         <v-text-field
           label="Wifi Name"
@@ -125,6 +127,43 @@
         <v-btn block @click="refresh" :loading="refreshing"> Refresh </v-btn>
       </v-card-text>
     </v-card>
+
+    <!-- commands -->
+    <v-card :disabled="cmdChar == null" class="mb-3">
+      <v-card-title> Run Commands </v-card-title>
+      <v-card-text>
+        <div class="d-flex align-center">
+          <v-text-field
+            label="Shell Command"
+            v-model="currentCmd"
+            placeholder="echo 123"
+            outlined
+            dense
+            hide-details
+            class="mr-3"
+          />
+          <v-btn icon @click="runCommand">
+            <v-icon>mdi-check</v-icon>
+          </v-btn>
+        </div>
+        <v-expansion-panels>
+          <v-expansion-panel v-for="result in cmdResults" :key="result.UUID">
+            <v-card>
+              <v-card-title>
+                {{ result.Cmd }}
+              </v-card-title>
+              <v-card-subtitle>UUID: {{ result.UUID }}</v-card-subtitle>
+              <v-card-text v-if="result.loading">
+                <v-progress-circular indeterminate />
+              </v-card-text>
+              <v-card-text v-else>
+                {{ result.Output }}
+              </v-card-text>
+            </v-card>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-card-text>
+    </v-card>
   </div>
 </template>
 
@@ -142,7 +181,8 @@ export default {
       device: null,
       server: null,
       service: null,
-      char: null,
+      wifiChar: null,
+      cmdChar: null,
       info: {
         ssid: "",
         psk: "",
@@ -164,6 +204,8 @@ export default {
       showPsk: false,
       saving: false,
       refreshing: false,
+      currentCmd: "",
+      cmdResults: [], // [{Cmd: '', Output: '', UUID:'', loading: true}]
     };
   },
   methods: {
@@ -173,6 +215,7 @@ export default {
       let namespaceUUID = uuidv5("discretetom.github.io", uuidv5.DNS);
       let serviceUUID = uuidv5(this.secret, namespaceUUID);
       let wifiCharUUID = uuidv5("wifi", serviceUUID);
+      let cmdCharUUID = uuidv5("cmd", serviceUUID);
 
       let filter = {};
       if (this.acceptAllDevices) filter.acceptAllDevices = true;
@@ -194,7 +237,8 @@ export default {
         this.service = await this.server.getPrimaryService(serviceUUID);
 
         this.$bus.$emit("append-msg", "Getting characteristic...");
-        this.char = await this.service.getCharacteristic(wifiCharUUID);
+        this.wifiChar = await this.service.getCharacteristic(wifiCharUUID);
+        this.cmdChar = await this.service.getCharacteristic(cmdCharUUID);
         this.refresh();
       } catch (e) {
         console.log(e);
@@ -218,7 +262,7 @@ export default {
           Router: this.info.staticRouter,
         };
         let encoder = new TextEncoder();
-        await this.char.writeValue(encoder.encode(JSON.stringify(result)));
+        await this.wifiChar.writeValue(encoder.encode(JSON.stringify(result)));
         this.$bus.$emit("append-msg", "Saved.");
 
         if (
@@ -248,7 +292,7 @@ export default {
       this.refreshing = true;
       try {
         this.$bus.$emit("append-msg", "Getting information...");
-        let res = await this.char.readValue();
+        let res = await this.wifiChar.readValue();
         let decoder = new TextDecoder("utf-8");
         let info = JSON.parse(decoder.decode(res.buffer));
         this.info.ssid = info.SSID;
@@ -268,6 +312,30 @@ export default {
         this.disconnect(e);
       } finally {
         this.refreshing = false;
+      }
+    },
+    async runCommand() {
+      let encoder = new TextEncoder();
+      let result = { Cmd: this.currentCmd, UUID: uuid.v4() };
+      await this.cmdChar.writeValue(encoder.encode(JSON.stringify(result)));
+      result.loading = true;
+      this.cmdResults.push(result);
+      while (true) {
+        // sleep
+        await new Promise((r) => setTimeout(r, 1000));
+
+        await this.cmdChar.read();
+        let decoder = new TextDecoder("utf-8");
+        let info = JSON.parse(decoder.decode(res.buffer));
+        if (info.UUID == result.UUID) {
+          this.cmdResults.map((r) => {
+            if (r.UUID == info.UUID) {
+              r.loading = false;
+              r.Output = info.Output;
+            }
+          });
+          break;
+        }
       }
     },
   },
