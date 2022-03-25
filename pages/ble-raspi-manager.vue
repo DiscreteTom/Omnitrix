@@ -157,7 +157,9 @@
                 <v-progress-circular indeterminate />
               </v-card-text>
               <v-card-text v-else>
+                <pre>
                 {{ result.Output }}
+                </pre>
               </v-card-text>
             </v-card>
           </v-expansion-panel>
@@ -317,9 +319,10 @@ export default {
     async runCommand() {
       let encoder = new TextEncoder();
       let result = { Cmd: this.currentCmd, UUID: uuid.v4() };
+      this.currentCmd = "";
       await this.cmdChar.writeValue(encoder.encode(JSON.stringify(result)));
       result.loading = true;
-      this.cmdResults.push(result);
+      this.cmdResults.unshift(result);
       while (true) {
         // sleep
         await new Promise((r) => setTimeout(r, 1000));
