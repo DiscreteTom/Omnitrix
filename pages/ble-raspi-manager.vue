@@ -157,9 +157,7 @@
                 <v-progress-circular indeterminate />
               </v-card-text>
               <v-card-text v-else>
-                <pre>
-                {{ result.Output }}
-                </pre>
+                <pre>{{ result.Output }}</pre>
               </v-card-text>
             </v-card>
           </v-expansion-panel>
