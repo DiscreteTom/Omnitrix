@@ -321,22 +321,27 @@ export default {
       await this.cmdChar.writeValue(encoder.encode(JSON.stringify(result)));
       result.loading = true;
       this.cmdResults.unshift(result);
+
+      let txt = "";
       while (true) {
         // sleep
         await new Promise((r) => setTimeout(r, 1000));
 
         let res = await this.cmdChar.readValue();
         let decoder = new TextDecoder("utf-8");
-        let info = JSON.parse(decoder.decode(res.buffer));
-        if (info.UUID == result.UUID) {
-          this.cmdResults.map((r) => {
-            if (r.UUID == info.UUID) {
-              r.loading = false;
-              r.Output = info.Output;
-            }
-          });
-          break;
-        }
+        txt += decoder.decode(res.buffer);
+        try {
+          let info = JSON.parse(txt);
+          if (info.UUID == result.UUID) {
+            this.cmdResults.map((r) => {
+              if (r.UUID == info.UUID) {
+                r.loading = false;
+                r.Output = info.Output;
+              }
+            });
+            break;
+          }
+        } catch {}
       }
     },
   },
