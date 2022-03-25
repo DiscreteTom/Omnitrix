@@ -132,7 +132,7 @@
     <v-card :disabled="cmdChar == null" class="mb-3">
       <v-card-title> Run Commands </v-card-title>
       <v-card-text>
-        <div class="d-flex align-center">
+        <div class="d-flex align-center mb-3">
           <v-text-field
             label="Shell Command"
             v-model="currentCmd"
@@ -141,6 +141,7 @@
             dense
             hide-details
             class="mr-3"
+            @keydown.enter="runCommand"
           />
           <v-btn icon @click="runCommand">
             <v-icon>mdi-check</v-icon>
