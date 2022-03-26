@@ -148,13 +148,21 @@
           </v-btn>
         </div>
         <v-expansion-panels>
-          <v-expansion-panel v-for="result in cmdResults" :key="result.UUID">
+          <v-expansion-panel
+            v-for="(result, i) in cmdResults"
+            :key="result.UUID"
+          >
             <v-card>
-              <v-card-title>
-                {{ result.Cmd }}
+              <v-card-title class="d-flex align-center">
+                <div class="flex-grow-1">
+                  {{ result.Cmd }}
+                </div>
+                <v-btn icon @click="cmdResults.pop(i)">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
               </v-card-title>
               <v-card-subtitle>UUID: {{ result.UUID }}</v-card-subtitle>
-              <v-card-text>
+              <v-card-text style="overflow: auto">
                 <pre>{{ result.Output }}</pre>
                 <v-progress-circular v-if="result.loading" indeterminate />
               </v-card-text>
