@@ -154,11 +154,9 @@
                 {{ result.Cmd }}
               </v-card-title>
               <v-card-subtitle>UUID: {{ result.UUID }}</v-card-subtitle>
-              <v-card-text v-if="result.loading">
-                <v-progress-circular indeterminate />
-              </v-card-text>
-              <v-card-text v-else>
+              <v-card-text>
                 <pre>{{ result.Output }}</pre>
+                <v-progress-circular v-if="result.loading" indeterminate />
               </v-card-text>
             </v-card>
           </v-expansion-panel>
@@ -325,13 +323,15 @@ export default {
 
       let buffer = new Uint8Array();
       let decoder = new TextDecoder("utf-8");
+      const UUID_Length = 36;
       while (true) {
         // wait for command execution
         await new Promise((r) => setTimeout(r, 1000));
 
         let res = await this.cmdChar.readValue();
-        if (decoder.decode(res.buffer.slice(0, 36)) == result.UUID) {
-          if (res.buffer.byteLength == 36) {
+        if (decoder.decode(res.buffer.slice(0, UUID_Length)) == result.UUID) {
+          if (res.buffer.byteLength == UUID_Length) {
+            // read completed
             this.cmdResults.map((r) => {
               if (r.UUID == result.UUID) {
                 r.loading = false;
@@ -340,9 +340,10 @@ export default {
             });
             break;
           }
+          // concat buffer
           buffer = new Uint8Array([
             ...buffer,
-            ...new Uint8Array(res.buffer.slice(36)),
+            ...new Uint8Array(res.buffer.slice(UUID_Length)),
           ]);
         } else {
           this.cmdResults.map((r) => {
