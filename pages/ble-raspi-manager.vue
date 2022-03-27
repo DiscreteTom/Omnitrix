@@ -224,13 +224,13 @@ export default {
       let wifiCharUUID = uuid.v5("wifi", serviceUUID);
       let cmdCharUUID = uuid.v5("cmd", serviceUUID);
 
-      let filter = {};
-      if (this.acceptAllDevices) filter.acceptAllDevices = true;
-      else filter.namePrefix = this.namePrefix;
+      let condition = {};
+      if (this.acceptAllDevices) condition.acceptAllDevices = true;
+      else condition.filters = [{ namePrefix: this.namePrefix }];
 
       try {
         this.device = await navigator.bluetooth.requestDevice({
-          filters: [filter],
+          ...condition,
           optionalServices: [serviceUUID],
         });
         this.device.addEventListener("gattserverdisconnected", () => {
