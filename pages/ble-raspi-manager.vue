@@ -322,13 +322,48 @@ export default {
       }
     },
     async runCommand() {
-      let encoder = new TextEncoder();
-      let result = { Cmd: this.currentCmd, UUID: uuid.v4() };
+      let id = uuid.v4();
+      let result = { Cmd: this.currentCmd, UUID: id, loading: true };
       this.currentCmd = "";
-      await this.cmdChar.writeValue(encoder.encode(JSON.stringify(result)));
-      result.loading = true;
       this.cmdResults.unshift(result);
 
+      await this.bleWrite(this.cmdChar, id, result.Cmd);
+
+      try {
+        let res = await this.bleRead(this.cmdChar, id);
+        this.cmdResults.map((r) => {
+          if (r.UUID == result.UUID) {
+            r.loading = false;
+            r.Output = res;
+          }
+        });
+      } catch {
+        this.cmdResults.map((r) => {
+          if (r.UUID == result.UUID) {
+            r.loading = false;
+            r.Output = "Error: Communication was interrupted.";
+          }
+        });
+      }
+    },
+    async bleWrite(char, uuid, content) {
+      let encoder = new TextEncoder();
+      let uuidBytes = encoder.encode(uuid);
+      let contentBytes = encoder.encode(content);
+      let start = 0;
+      while (true) {
+        let end = start + 256; // send 256 byte every time
+        if (end > contentBytes.byteLength) end = contentBytes.byteLength;
+        await char.writeValue(
+          this.concatBytes(uuidBytes, contentBytes.slice(start, end))
+        );
+        if (end == contentBytes.byteLength) break;
+        start = end;
+      }
+      // send uuid only to finish
+      await char.writeValue(uuidBytes);
+    },
+    async bleRead(char, uuid) {
       let buffer = new Uint8Array();
       let decoder = new TextDecoder("utf-8");
       const UUID_Length = 36;
@@ -336,33 +371,26 @@ export default {
         // wait for command execution
         await new Promise((r) => setTimeout(r, 1000));
 
-        let res = await this.cmdChar.readValue();
-        if (decoder.decode(res.buffer.slice(0, UUID_Length)) == result.UUID) {
+        let res = await char.readValue();
+        if (decoder.decode(res.buffer.slice(0, UUID_Length)) == uuid) {
           if (res.buffer.byteLength == UUID_Length) {
-            // read completed
-            this.cmdResults.map((r) => {
-              if (r.UUID == result.UUID) {
-                r.loading = false;
-                r.Output = decoder.decode(buffer);
-              }
-            });
-            break;
+            // uuid only, read completed
+            return decoder.decode(buffer);
           }
-          // concat buffer
-          buffer = new Uint8Array([
-            ...buffer,
-            ...new Uint8Array(res.buffer.slice(UUID_Length)),
-          ]);
+
+          // else, concat buffer
+          buffer = this.concatBytes(
+            buffer,
+            new Uint8Array(res.buffer.slice(UUID_Length))
+          );
         } else {
-          this.cmdResults.map((r) => {
-            if (r.UUID == result.UUID) {
-              r.loading = false;
-              r.Output = "Error: Communication was interrupted.";
-            }
-          });
-          break;
+          // uuid mismatch
+          throw "Error: Communication was interrupted.";
         }
       }
+    },
+    concatBytes(a, b) {
+      return new Uint8Array([...a, ...b]);
     },
   },
 };
