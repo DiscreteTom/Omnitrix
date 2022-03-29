@@ -46,6 +46,15 @@
                 type="number"
                 class="mb-3"
               />
+              <v-text-field
+                label="Connection Retry"
+                v-model="retryConnectDevice"
+                outlined
+                dense
+                hide-details
+                type="number"
+                class="mb-3"
+              />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -224,6 +233,7 @@ export default {
       currentCmd: "",
       cmdResults: [], // [{Cmd: '', Output: '', UUID:'', loading: true}]
       bleReadInterval: 500,
+      retryConnectDevice: 3,
     };
   },
   methods: {
@@ -239,31 +249,43 @@ export default {
       if (this.acceptAllDevices) condition.acceptAllDevices = true;
       else condition.filters = [{ namePrefix: this.namePrefix }];
 
+      // choose device
       try {
         this.device = await navigator.bluetooth.requestDevice({
           ...condition,
           optionalServices: [serviceUUID],
         });
-        this.device.addEventListener("gattserverdisconnected", () => {
-          this.disconnect("Raspi disconnected.");
-        });
-
-        this.$bus.$emit("append-msg", "Connecting...");
-        this.server = await this.device.gatt.connect();
-
-        this.$bus.$emit("append-msg", "Getting service...");
-        this.service = await this.server.getPrimaryService(serviceUUID);
-
-        this.$bus.$emit("append-msg", "Getting characteristic...");
-        this.wifiChar = await this.service.getCharacteristic(wifiCharUUID);
-        this.cmdChar = await this.service.getCharacteristic(cmdCharUUID);
-        this.refresh();
       } catch (e) {
         console.log(e);
         this.disconnect(e);
-      } finally {
         this.loading = false;
+        return;
       }
+      if (this.device == null) {
+        this.loading = false;
+        return;
+      }
+
+      for (let i = 0; i < this.retryConnectDevice; i++) {
+        try {
+          this.$bus.$emit("append-msg", "Connecting...");
+          this.server = await this.device.gatt.connect();
+
+          this.$bus.$emit("append-msg", "Getting service...");
+          this.service = await this.server.getPrimaryService(serviceUUID);
+
+          this.$bus.$emit("append-msg", "Getting characteristic...");
+          this.wifiChar = await this.service.getCharacteristic(wifiCharUUID);
+          this.cmdChar = await this.service.getCharacteristic(cmdCharUUID);
+          this.refresh();
+          break;
+        } catch (e) {
+          console.log(e);
+          this.disconnect(e);
+          this.$bus.$emit("append-msg", "Retrying...");
+        }
+      }
+      this.loading = false;
     },
     async save() {
       if (!this.server?.connected) {
