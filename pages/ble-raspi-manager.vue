@@ -35,6 +35,16 @@
                 outlined
                 dense
                 hide-details
+                class="mb-3"
+              />
+              <v-text-field
+                label="Read Interval for Long Content (ms)"
+                v-model="bleReadInterval"
+                outlined
+                dense
+                hide-details
+                type="number"
+                class="mb-3"
               />
             </v-expansion-panel-content>
           </v-expansion-panel>
@@ -213,6 +223,7 @@ export default {
       refreshing: false,
       currentCmd: "",
       cmdResults: [], // [{Cmd: '', Output: '', UUID:'', loading: true}]
+      bleReadInterval: 500,
     };
   },
   methods: {
@@ -369,7 +380,7 @@ export default {
       const UUID_Length = 36;
       while (true) {
         // wait for command execution
-        await new Promise((r) => setTimeout(r, 1000));
+        await new Promise((r) => setTimeout(r, this.bleReadInterval));
 
         let res = await char.readValue();
         if (decoder.decode(res.buffer.slice(0, UUID_Length)) == uuid) {
