@@ -74,27 +74,17 @@
       <v-card-title> Raspberry Pi Network </v-card-title>
       <v-card-text>
         <v-text-field
-          label="Wifi Name"
-          v-model="info.ssid"
+          label="Connected Wifi"
+          v-model="wifiStatus.currentWifi"
           outlined
           dense
           hide-details
-          class="mb-3"
-        />
-        <v-text-field
-          label="Wifi Password"
-          v-model="info.psk"
-          outlined
-          dense
-          hide-details
-          :type="showPsk ? 'text' : 'password'"
-          :append-icon="showPsk ? 'mdi-eye' : 'mdi-eye-off'"
-          @click:append="showPsk = !showPsk"
+          disabled
           class="mb-3"
         />
         <v-text-field
           label="Current IP"
-          v-model="info.currentIp"
+          v-model="wifiStatus.currentIp"
           outlined
           dense
           hide-details
@@ -103,47 +93,83 @@
         />
         <v-text-field
           label="Current Router"
-          v-model="info.router"
+          v-model="wifiStatus.router"
           outlined
           dense
           hide-details
           disabled
           class="mb-3"
         />
-        <v-switch
-          v-model="info.ipIsStatic"
-          label="Use Static IP"
-          inset
-          class="mb-3"
-          hide-details
-        />
         <v-text-field
           label="Static IP with Prefix Length"
-          v-model="info.staticIp"
+          v-model="wifiStatus.staticIp"
           outlined
           dense
           :rules="[
             (value) => value.includes('/') && value.split('/')[1].length > 0,
           ]"
           hide-details
-          :disabled="!info.ipIsStatic"
           class="mb-3"
           placeholder="192.168.0.123/24"
         />
         <v-text-field
           label="Static Router"
-          v-model="info.staticRouter"
+          v-model="wifiStatus.staticRouter"
           outlined
           dense
+          :disabled="!wifiStatus.staticIp"
           hide-details
-          :disabled="!info.ipIsStatic"
           class="mb-3"
           placeholder="192.168.0.1"
         />
+        <v-card class="mb-3">
+          <v-card-title>WIFIs</v-card-title>
+          <v-card-text>
+            <div
+              v-for="(wifi, i) in wifiStatus.wifis"
+              :key="i"
+              class="d-flex mb-3"
+            >
+              <v-text-field
+                v-model="wifi.SSID"
+                label="SSID"
+                outlined
+                dense
+                hide-details
+                class="mb-3"
+              />
+              <v-text-field
+                v-model="wifi.PSK"
+                label="PSK"
+                outlined
+                dense
+                hide-details
+                class="mb-3 mx-3"
+                :type="wifi.showPsk ? 'text' : 'password'"
+                :append-icon="wifi.showPsk ? 'mdi-eye' : 'mdi-eye-off'"
+                @click:append="wifi.showPsk = !wifi.showPsk"
+              />
+              <v-btn icon @click="wifiStatus.wifis.pop(i)">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+            <v-btn
+              block
+              @click="
+                wifiStatus.wifis.push({ SSID: '', PSK: '', showPsk: false })
+              "
+              class="mb-3"
+            >
+              Add WIFI
+            </v-btn>
+          </v-card-text>
+        </v-card>
         <v-btn block @click="save" :loading="saving" class="mb-3">
           Save Configuration
         </v-btn>
-        <v-btn block @click="refresh" :loading="refreshing"> Refresh </v-btn>
+        <v-btn block @click="refreshWifi" :loading="refreshingWifi">
+          Refresh
+        </v-btn>
       </v-card-text>
     </v-card>
 
@@ -209,27 +235,24 @@ export default {
       service: null,
       wifiChar: null,
       cmdChar: null,
-      info: {
-        ssid: "",
-        psk: "",
+      wifiStatus: {
+        currentWifi: "",
         currentIp: "",
-        ipIsStatic: false,
         staticIp: "",
         router: "",
+        wifis: [],
         staticRouter: "",
       },
-      oldInfo: {
-        ssid: "",
-        psk: "",
+      oldwifiStatus: {
+        currentWifi: "",
         currentIp: "",
-        ipIsStatic: false,
         staticIp: "",
         router: "",
-        staticRouter: "",
+        wifis: [],
       },
       showPsk: false,
       saving: false,
-      refreshing: false,
+      refreshingWifi: false,
       currentCmd: "",
       cmdResults: [], // [{Cmd: '', Output: '', UUID:'', loading: true}]
       bleReadInterval: 500,
@@ -277,7 +300,7 @@ export default {
           this.$bus.$emit("append-msg", "Getting characteristic...");
           this.wifiChar = await this.service.getCharacteristic(wifiCharUUID);
           this.cmdChar = await this.service.getCharacteristic(cmdCharUUID);
-          this.refresh();
+          this.refreshWifi();
           break;
         } catch (e) {
           console.log(e);
@@ -292,27 +315,26 @@ export default {
         this.disconnect("BLE server disconnected.");
         return;
       }
-      this.saving = true;
-      try {
-        let result = {
-          SSID: this.info.ssid,
-          PSK: this.info.psk,
-          Static: this.info.ipIsStatic,
-          StaticIP: this.info.staticIp,
-          Router: this.info.staticRouter,
-        };
-        let encoder = new TextEncoder();
-        await this.wifiChar.writeValue(encoder.encode(JSON.stringify(result)));
-        this.$bus.$emit("append-msg", "Saved.");
 
-        if (
-          (!this.info.ipIsStatic && this.oldInfo.ipIsStatic) ||
-          (this.info.ipIsStatic &&
-            (this.info.staticIp != this.oldInfo.staticIp ||
-              this.info.staticRouter != this.oldInfo.staticRouter))
-        ) {
-          this.disconnect("Raspi will reboot. Disconnected.");
-        }
+      this.saving = true;
+      let WIFIs = [];
+      this.wifiStatus.wifis.map((w) =>
+        WIFIs.push({ SSID: w.SSID, PSK: w.PSK })
+      );
+      let req = {
+        RefreshOnly: false,
+        StaticIP: this.wifiStatus.staticIp,
+        Router:
+          this.wifiStatus.staticIp.length > 0
+            ? this.wifiStatus.staticRouter
+            : "",
+        WIFIs,
+      };
+
+      try {
+        await this.bleWrite(this.wifiChar, uuid.v4(), JSON.stringify(req));
+        this.$bus.$emit("append-msg", "Saved.");
+        await this.refreshWifi();
       } catch (e) {
         console.log(e);
         this.disconnect(e);
@@ -328,30 +350,40 @@ export default {
       this.device = null;
       this.server = null;
     },
-    async refresh() {
-      this.refreshing = true;
+    async refreshWifi() {
+      this.refreshingWifi = true;
       try {
         this.$bus.$emit("append-msg", "Getting information...");
-        let res = await this.wifiChar.readValue();
-        let decoder = new TextDecoder("utf-8");
-        let info = JSON.parse(decoder.decode(res.buffer));
-        this.info.ssid = info.SSID;
-        this.info.psk = info.PSK;
-        this.info.currentIp = info.CurrentIP;
-        this.info.ipIsStatic = info.Static;
-        this.info.staticIp = info.StaticIP;
-        if (info.Static) {
-          this.info.staticRouter = info.Router;
-        } else {
-          this.info.staticRouter = "";
-        }
-        this.info.router = info.Router;
-        this.oldInfo = JSON.parse(JSON.stringify(this.info)); // deep copy
+        let id = uuid.v4();
+
+        await this.bleWrite(
+          this.wifiChar,
+          id,
+          JSON.stringify({ RefreshOnly: true })
+        );
+        let res = await this.bleRead(this.wifiChar, id);
+        let info = JSON.parse(res);
+        console.log(info);
+
+        this.wifiStatus.currentWifi = info.CurrentWIFI;
+        this.wifiStatus.currentIp = info.CurrentIP;
+        this.wifiStatus.router = info.Router;
+        this.wifiStatus.staticIp = info.StaticIP;
+        this.wifiStatus.staticRouter =
+          info.StaticIP.length > 0 ? info.Router : "";
+        this.wifiStatus.wifis = info.WIFIs.map((w) => {
+          w.showPsk = false;
+          return w;
+        });
+
+        this.oldwifiStatus = JSON.parse(JSON.stringify(this.wifiStatus)); // deep copy
         this.$bus.$emit("append-msg", "Updated.");
       } catch (e) {
-        this.disconnect(e);
+        console.log(e);
+        this.$bus.$emit("append-msg", e);
+        // this.disconnect(e);
       } finally {
-        this.refreshing = false;
+        this.refreshingWifi = false;
       }
     },
     async runCommand() {
@@ -370,11 +402,11 @@ export default {
             r.Output = res;
           }
         });
-      } catch {
+      } catch (e) {
         this.cmdResults.map((r) => {
           if (r.UUID == result.UUID) {
             r.loading = false;
-            r.Output = "Error: Communication was interrupted.";
+            r.Output = e;
           }
         });
       }
