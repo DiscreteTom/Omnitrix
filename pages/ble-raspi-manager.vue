@@ -46,15 +46,6 @@
                 type="number"
                 class="mb-3"
               />
-              <v-text-field
-                label="Connection Retry"
-                v-model="retryConnectDevice"
-                outlined
-                dense
-                hide-details
-                type="number"
-                class="mb-3"
-              />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -256,7 +247,6 @@ export default {
       currentCmd: "",
       cmdResults: [], // [{Cmd: '', Output: '', UUID:'', loading: true}]
       bleReadInterval: 500,
-      retryConnectDevice: 3,
     };
   },
   methods: {
@@ -278,37 +268,22 @@ export default {
           ...condition,
           optionalServices: [serviceUUID],
         });
+
+        this.$bus.$emit("append-msg", "Connecting...");
+        this.server = await this.device.gatt.connect();
+
+        this.$bus.$emit("append-msg", "Getting service...");
+        this.service = await this.server.getPrimaryService(serviceUUID);
+
+        this.$bus.$emit("append-msg", "Getting characteristic...");
+        this.wifiChar = await this.service.getCharacteristic(wifiCharUUID);
+        this.cmdChar = await this.service.getCharacteristic(cmdCharUUID);
+        this.refreshWifi();
       } catch (e) {
-        console.log(e);
         this.disconnect(e);
+      } finally {
         this.loading = false;
-        return;
       }
-      if (this.device == null) {
-        this.loading = false;
-        return;
-      }
-
-      for (let i = 0; i < this.retryConnectDevice; i++) {
-        try {
-          this.$bus.$emit("append-msg", "Connecting...");
-          this.server = await this.device.gatt.connect();
-
-          this.$bus.$emit("append-msg", "Getting service...");
-          this.service = await this.server.getPrimaryService(serviceUUID);
-
-          this.$bus.$emit("append-msg", "Getting characteristic...");
-          this.wifiChar = await this.service.getCharacteristic(wifiCharUUID);
-          this.cmdChar = await this.service.getCharacteristic(cmdCharUUID);
-          this.refreshWifi();
-          break;
-        } catch (e) {
-          console.log(e);
-          this.disconnect(e);
-          this.$bus.$emit("append-msg", "Retrying...");
-        }
-      }
-      this.loading = false;
     },
     async save() {
       if (!this.server?.connected) {
@@ -336,13 +311,13 @@ export default {
         this.$bus.$emit("append-msg", "Saved.");
         await this.refreshWifi();
       } catch (e) {
-        console.log(e);
         this.disconnect(e);
       } finally {
         this.saving = false;
       }
     },
     disconnect(e) {
+      console.log(e);
       this.$bus.$emit("append-msg", e);
       try {
         this.device.gatt.disconnect();
