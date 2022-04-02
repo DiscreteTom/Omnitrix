@@ -145,6 +145,11 @@ export default {
           icon: "mdi-bluetooth-settings",
           text: "BLE Raspi Manager",
         },
+        {
+          to: "/video-subtitle",
+          icon: "mdi-script-text-play-outline",
+          text: "Video Subtitle",
+        },
       ],
     };
   },
