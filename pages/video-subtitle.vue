@@ -172,7 +172,7 @@ export default {
       }
       // set last `to` if not set
       if (
-        this.currentIndex == this.subtitles.length &&
+        this.currentIndex == this.subtitles.length - 1 &&
         this.subtitles[this.currentIndex].to === 0
       ) {
         this.subtitles[this.currentIndex].to = this.video.duration.toFixed(2);
