@@ -34,8 +34,8 @@
           accept="text/*,.md"
         />
       </v-btn>
-      <v-btn block class="my-3" @click="apply('from')"> APPLY FROM </v-btn>
-      <v-btn block class="my-3" @click="apply('to')"> APPLY TO </v-btn>
+      <v-btn block class="my-3" @click="applyFrom"> APPLY FROM </v-btn>
+      <v-btn block class="my-3" @click="applyTo"> APPLY TO </v-btn>
       <v-btn block class="my-3" @click="exportBcc"> EXPORT BCC </v-btn>
     </div>
 
@@ -159,8 +159,31 @@ export default {
       this.video.appendChild(source);
       source.src = URL.createObjectURL(event.target.files[0]);
     },
-    apply(field) {
-      this.subtitles[this.currentIndex][field] = this.video.currentTime;
+    applyFrom() {
+      this.subtitles[this.currentIndex].from =
+        this.video.currentTime.toFixed(2);
+      // set previous `to` if not set
+      if (
+        this.currentIndex !== 0 &&
+        this.subtitles[this.currentIndex - 1].to === 0
+      ) {
+        this.subtitles[this.currentIndex - 1].to =
+          this.video.currentTime.toFixed(2);
+      }
+      // set last `to` if not set
+      if (
+        this.currentIndex == this.subtitles.length &&
+        this.subtitles[this.currentIndex].to === 0
+      ) {
+        this.subtitles[this.currentIndex].to = this.video.duration.toFixed(2);
+      }
+
+      this.currentIndex++;
+      this.currentIndex %= this.subtitles.length;
+    },
+    applyTo() {
+      this.subtitles[this.currentIndex].from =
+        this.video.currentTime.toFixed(2);
       this.currentIndex++;
       this.currentIndex %= this.subtitles.length;
     },
