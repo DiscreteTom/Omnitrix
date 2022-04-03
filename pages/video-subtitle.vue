@@ -167,19 +167,17 @@ export default {
     async loadSubtitleText(event) {
       if (!event?.target?.files?.[0]) return;
 
-      this.loadingText = true;
-      this.subtitles = [];
-      this.currentIndex = 0;
-
-      let txt = await event.target.files[0].text();
-      txt
-        .split("\n")
-        .map((line) => line.trim())
-        .filter((line) => line.length !== 0)
-        .filter((line) => !line.startsWith("#"))
-        .map((line) => this.subtitles.push({ content: line, from: 0, to: 0 }));
-
-      this.loadingText = false;
+      await this.resetSubtitle(async () => {
+        let txt = await event.target.files[0].text();
+        txt
+          .split("\n")
+          .map((line) => line.trim())
+          .filter((line) => line.length !== 0)
+          .filter((line) => !line.startsWith("#"))
+          .map((line) =>
+            this.subtitles.push({ content: line, from: 0, to: 0 })
+          );
+      });
     },
     updateVideoSrc(event) {
       if (!event?.target?.files?.[0]) return;
@@ -263,14 +261,21 @@ export default {
     async importBcc(event) {
       if (!event?.target?.files?.[0]) return;
 
+      await this.resetSubtitle(async () => {
+        let txt = await event.target.files[0].text();
+        this.subtitles = JSON.parse(txt).body;
+      });
+    },
+    async resetSubtitle(f) {
       this.loadingBcc = true;
+      this.loadingText = true;
       this.subtitles = [];
       this.currentIndex = 0;
 
-      let txt = await event.target.files[0].text();
-      this.subtitles = JSON.parse(txt).body;
+      await f();
 
       this.loadingBcc = false;
+      this.loadingText = false;
     },
   },
 };
