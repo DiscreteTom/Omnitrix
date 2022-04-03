@@ -73,8 +73,8 @@
             @click="
               subtitles.push({
                 content: '',
-                from: '',
-                to: '',
+                from: (0.0).toFixed(2),
+                to: (0.0).toFixed(2),
               })
             "
           >
@@ -157,6 +157,15 @@ export default {
       source.src = URL.createObjectURL(event.target.files[0]);
     },
     applyFrom() {
+      if (!this.video) {
+        this.$bus.$emit("append-msg", "No video file.");
+        return;
+      }
+      if (!this.subtitles.length) {
+        this.$bus.$emit("append-msg", "No subtitle text.");
+        return;
+      }
+
       this.subtitles[this.currentIndex].from =
         this.video.currentTime.toFixed(2);
       // set previous `to` if not set
@@ -179,6 +188,15 @@ export default {
       this.currentIndex %= this.subtitles.length;
     },
     applyTo() {
+      if (!this.video) {
+        this.$bus.$emit("append-msg", "No video file.");
+        return;
+      }
+      if (!this.subtitles.length) {
+        this.$bus.$emit("append-msg", "No subtitle text.");
+        return;
+      }
+
       this.subtitles[this.currentIndex].from =
         this.video.currentTime.toFixed(2);
       this.currentIndex++;
