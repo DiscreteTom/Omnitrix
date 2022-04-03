@@ -64,6 +64,30 @@
             </v-btn>
           </div>
         </template>
+        <template v-slot:[`item.from`]="props">
+          <v-edit-dialog :return-value.sync="props.item.from">
+            {{ props.item.from }}
+            <template v-slot:input>
+              <v-text-field v-model="props.item.from" single-line />
+            </template>
+          </v-edit-dialog>
+        </template>
+        <template v-slot:[`item.to`]="props">
+          <v-edit-dialog :return-value.sync="props.item.to">
+            {{ props.item.to }}
+            <template v-slot:input>
+              <v-text-field v-model="props.item.to" single-line />
+            </template>
+          </v-edit-dialog>
+        </template>
+        <template v-slot:[`item.content`]="props">
+          <v-edit-dialog :return-value.sync="props.item.content">
+            {{ props.item.content }}
+            <template v-slot:input>
+              <v-text-field v-model="props.item.content" single-line />
+            </template>
+          </v-edit-dialog>
+        </template>
       </v-data-table>
 
       <v-card>
