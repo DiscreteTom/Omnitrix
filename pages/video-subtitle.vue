@@ -48,18 +48,18 @@
         hide-default-footer
         :items-per-page="-1"
       >
-        <template v-slot:[`item.index`]="{ item }">
-          <v-icon v-if="item.index == currentIndex" color="green">
+        <template v-slot:[`item.index`]="{ index }">
+          <v-icon v-if="index == currentIndex" color="green">
             mdi-arrow-right-thin
           </v-icon>
-          <span v-else> {{ item.index + 1 }} </span>
+          <span v-else> {{ index + 1 }} </span>
         </template>
-        <template v-slot:[`item.actions`]="{ item }">
+        <template v-slot:[`item.actions`]="{ index }">
           <div class="d-flex">
-            <v-btn icon @click="currentIndex = item.index" small class="mx-1">
+            <v-btn icon @click="currentIndex = index" small class="mx-1">
               <v-icon dense>mdi-arrow-left-thin</v-icon>
             </v-btn>
-            <v-btn icon @click="subtitles.pop(item.index)" small>
+            <v-btn icon @click="subtitles.pop(index)" small>
               <v-icon dense>mdi-close</v-icon>
             </v-btn>
           </div>
@@ -75,7 +75,6 @@
                 content: '',
                 from: '',
                 to: '',
-                index: subtitles.length,
               })
             "
           >
@@ -118,7 +117,7 @@ export default {
         { text: "Content", value: "content", sortable: false },
         { text: "Actions", value: "actions", sortable: false },
       ],
-      subtitles: [], // [{index, from, to, content}]
+      subtitles: [], // [{ from, to, content }]
       loadingText: false,
       currentIndex: 0,
       video: null,
@@ -138,9 +137,7 @@ export default {
         .map((line) => line.trim())
         .filter((line) => line.length !== 0)
         .filter((line) => !line.startsWith("#"))
-        .map((line, index) =>
-          this.subtitles.push({ content: line, from: 0, to: 0, index })
-        );
+        .map((line) => this.subtitles.push({ content: line, from: 0, to: 0 }));
 
       this.loadingText = false;
     },
