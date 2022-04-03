@@ -37,6 +37,21 @@
       <v-btn block class="my-3" @click="applyFrom"> APPLY FROM </v-btn>
       <v-btn block class="my-3" @click="applyTo"> APPLY TO </v-btn>
       <v-btn block class="my-3" @click="exportBcc"> EXPORT BCC </v-btn>
+      <v-btn
+        block
+        class="my-3"
+        @click="$refs.bccFileInput.click()"
+        :loading="loadingBcc"
+      >
+        Import BCC
+        <input
+          type="file"
+          ref="bccFileInput"
+          @change="importBcc($event)"
+          style="display: none"
+          accept=".bcc,.json"
+        />
+      </v-btn>
     </div>
 
     <!-- right -->
@@ -145,6 +160,7 @@ export default {
       loadingText: false,
       currentIndex: 0,
       video: null,
+      loadingBcc: false,
     };
   },
   methods: {
@@ -243,6 +259,18 @@ export default {
         }),
       };
       download(JSON.stringify(result), "subtitle.bcc", "application/json");
+    },
+    async importBcc(event) {
+      if (!event?.target?.files?.[0]) return;
+
+      this.loadingBcc = true;
+      this.subtitles = [];
+      this.currentIndex = 0;
+
+      let txt = await event.target.files[0].text();
+      this.subtitles = JSON.parse(txt).body;
+
+      this.loadingBcc = false;
     },
   },
 };
