@@ -14,7 +14,7 @@
         <input
           type="file"
           ref="videoFileInput"
-          @change="updateVideoSrc($event)"
+          @input="updateVideoSrc($event)"
           style="display: none"
           accept="video/*"
         />
@@ -29,7 +29,7 @@
         <input
           type="file"
           ref="textFileInput"
-          @change="loadSubtitleText($event)"
+          @input="loadSubtitleText($event)"
           style="display: none"
           accept="text/*,.md"
         />
