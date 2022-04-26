@@ -65,7 +65,7 @@
             @input="calculate"
             @click.stop
           />
-          <v-btn icon @click.stop="custom.pop(i)">
+          <v-btn icon @click.stop="custom.splice(i, 1)">
             <v-icon> mdi-close </v-icon>
           </v-btn>
         </v-card-title>

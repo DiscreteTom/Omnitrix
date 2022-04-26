@@ -140,7 +140,7 @@
                 :append-icon="wifi.showPsk ? 'mdi-eye' : 'mdi-eye-off'"
                 @click:append="wifi.showPsk = !wifi.showPsk"
               />
-              <v-btn icon @click="wifiStatus.wifis.pop(i)">
+              <v-btn icon @click="wifiStatus.wifis.splice(i, 1)">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
@@ -193,7 +193,7 @@
                 <div class="flex-grow-1">
                   {{ result.Cmd }}
                 </div>
-                <v-btn icon @click="cmdResults.pop(i)">
+                <v-btn icon @click="cmdResults.splice(i, 1)">
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
               </v-card-title>

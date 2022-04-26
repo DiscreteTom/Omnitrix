@@ -74,7 +74,7 @@
             <v-btn icon @click="currentIndex = index" small class="mx-1">
               <v-icon dense>mdi-arrow-left-thin</v-icon>
             </v-btn>
-            <v-btn icon @click="subtitles.pop(index)" small>
+            <v-btn icon @click="subtitles.splice(index, 1)" small>
               <v-icon dense>mdi-close</v-icon>
             </v-btn>
           </div>
