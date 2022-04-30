@@ -1,23 +1,6 @@
 /*! js-yaml 4.1.0 https://github.com/nodeca/js-yaml @license MIT */
 
 
-/**
-	   * @license
-	   * Copyright Google Inc. All Rights Reserved.
-	   *
-	   * Use of this source code is governed by an MIT-style license that can be
-	   * found in the LICENSE file at https://angular.io/license
-	   */
-
-/**
-	 * @license
-	 * Copyright Google Inc. All Rights Reserved.
-	 *
-	 * Use of this source code is governed by an MIT-style license that can be
-	 * found in the LICENSE file at https://angular.io/license
-	 */
-
-
 /*!
   * vue-router v3.5.3
   * (c) 2021 Evan You
@@ -102,3 +85,20 @@ object-assign
  * © 2017-2019 @scopewu(https://github.com/scopewu)
  * MIT License.
  */
+
+
+/**
+	   * @license
+	   * Copyright Google Inc. All Rights Reserved.
+	   *
+	   * Use of this source code is governed by an MIT-style license that can be
+	   * found in the LICENSE file at https://angular.io/license
+	   */
+
+/**
+	 * @license
+	 * Copyright Google Inc. All Rights Reserved.
+	 *
+	 * Use of this source code is governed by an MIT-style license that can be
+	 * found in the LICENSE file at https://angular.io/license
+	 */
