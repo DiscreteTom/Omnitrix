@@ -192,6 +192,8 @@ export default {
       this.codeCache = val;
     },
     fullscreen(val) {
+      this.code = this.codeCache;
+
       if (val) {
         let f = () => {
           setTimeout(() => {
