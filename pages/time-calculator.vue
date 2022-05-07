@@ -48,6 +48,7 @@
               hide-details
               :class="$vuetify.breakpoint.smAndUp ? 'mr-3' : 'mb-3 mr-3'"
               @keydown.enter="calculate"
+              @input="calculate"
             />
             <v-tooltip top>
               <template v-slot:activator="{ on }">
