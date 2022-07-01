@@ -150,6 +150,11 @@ export default {
           icon: "mdi-script-text-play-outline",
           text: "Video Subtitle",
         },
+        {
+          to: "/media-recorder",
+          icon: "mdi-file-video-outline",
+          text: "Media Recorder",
+        },
       ],
     };
   },
