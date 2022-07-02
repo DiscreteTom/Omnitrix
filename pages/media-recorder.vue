@@ -98,11 +98,11 @@
 export default {
   data() {
     return {
-      ready: false,
-      enableAudio: true,
+      ready: true,
+      enableAudio: false,
       enableVideo: true,
-      enablePreview: false,
-      videoInputType: "camera",
+      enablePreview: true,
+      videoInputType: "screen",
       devices: [],
       audioDeviceName: "",
       videoDeviceName: "",
@@ -110,12 +110,14 @@ export default {
       mutePreview: true,
       screenStream: null,
       deviceStream: null,
+      resultStream: null,
       recorder: null,
       chunks: [],
     };
   },
   methods: {
     async selectWindow() {
+      this.screenStream?.getTracks().map((t) => t.stop()); // stop existing stream
       try {
         this.screenStream = await navigator.mediaDevices.getDisplayMedia();
       } catch (e) {
@@ -130,7 +132,8 @@ export default {
         return;
       }
 
-      this.$refs.preview.srcObject = await this.getResultStream();
+      await this.getResultStream();
+      this.$refs.preview.srcObject = this.resultStream;
     },
     async startRecording() {
       this.recording = true;
@@ -142,6 +145,7 @@ export default {
         this.chunks.push(e.data);
       };
       this.recorder.start();
+      this.$bus.$emit("append-msg", "Recording started");
     },
     stopRecording() {
       this.recording = false;
@@ -153,6 +157,10 @@ export default {
       this.recorder = null;
     },
     async getResultStream() {
+      this.resultStream?.getTracks().map((t) => t.stop());
+
+      await this.refreshDevices();
+
       let options = { audio: false, video: false };
       if (this.enableAudio) {
         options.audio = {
@@ -175,10 +183,19 @@ export default {
         }
       }
 
-      try {
-        this.deviceStream = await navigator.mediaDevices.getUserMedia(options);
-      } catch (e) {
-        console.log(e);
+      if (
+        this.enableAudio ||
+        (this.enableVideo && this.videoInputType == "camera")
+      ) {
+        try {
+          this.deviceStream = await navigator.mediaDevices.getUserMedia(
+            options
+          );
+        } catch (e) {
+          console.log(e);
+          this.deviceStream = null;
+        }
+      } else {
         this.deviceStream = null;
       }
 
@@ -186,23 +203,36 @@ export default {
       this.deviceStream?.getTracks().map((t) => stream.addTrack(t));
       this.screenStream?.getTracks().map((t) => stream.addTrack(t));
 
-      return stream.getTracks().length == 0 ? null : stream;
+      this.resultStream = stream.getTracks().length == 0 ? null : stream;
     },
     async refreshDevices() {
-      try {
-        await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-      } catch {
-        this.$bus.$emit("append-msg", "Failed to get media devices.");
-        return;
+      if (
+        this.enableAudio ||
+        (this.enableVideo && this.videoInputType == "camera")
+      ) {
+        this.$bus.$emit("append-msg", "Refreshing device list...");
+        try {
+          this.ready = false;
+          await navigator.mediaDevices.getUserMedia({
+            audio: this.enableAudio,
+            video: this.enableVideo && this.videoInputType == "camera",
+          });
+        } catch {
+          this.$bus.$emit("append-msg", "Failed to get media devices.");
+          this.enableAudio = false;
+          this.videoInputType = "screen";
+          this.ready = true;
+          return;
+        }
+        this.devices = await navigator.mediaDevices.enumerateDevices();
+        this.audioDeviceName ||= this.audioDeviceNames[0] || "";
+        this.videoDeviceName ||= this.videoDeviceNames[0] || "";
+        this.ready = true;
       }
-      this.devices = await navigator.mediaDevices.enumerateDevices();
-      this.audioDeviceName ||= this.audioDeviceNames[0];
-      this.videoDeviceName ||= this.videoDeviceNames[0];
-      this.ready = true;
     },
   },
   mounted() {
-    this.refreshDevices();
+    this.updatePreview();
   },
   computed: {
     audioDeviceNames() {
