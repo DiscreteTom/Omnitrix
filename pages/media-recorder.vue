@@ -7,7 +7,7 @@
         v-model="enableAudio"
         inset
         :disabled="recording"
-        @change="updatePreview"
+        @change="updatePreview('audio')"
       />
       <v-select
         label="Captured Audio"
@@ -18,7 +18,7 @@
         hide-details
         :disabled="!enableAudio || recording"
         class="ml-3"
-        @change="updatePreview"
+        @change="updatePreview('audio')"
       />
     </div>
 
@@ -29,14 +29,14 @@
         v-model="enableVideo"
         :disabled="recording"
         inset
-        @change="updatePreview"
+        @change="updatePreview('video')"
       />
       <v-radio-group
         v-model="videoInputType"
         row
         :disabled="!enableVideo || recording"
         class="ml-3"
-        @change="updatePreview"
+        @change="updatePreview('video')"
       >
         <v-radio label="Camera" value="camera" />
         <v-radio label="Record Screen" value="screen" />
@@ -50,7 +50,7 @@
         dense
         hide-details
         :disabled="!enableVideo || recording"
-        @change="updatePreview"
+        @change="updatePreview('video')"
       />
       <v-btn
         v-if="videoInputType == 'screen'"
@@ -78,7 +78,7 @@
         v-model="enablePreview"
         inset
         class="ml-3"
-        @change="updatePreview"
+        @change="updatePreview('all')"
         :disabled="!ready"
       />
       <v-switch label="Mute Preview" v-model="mutePreview" inset class="ml-3" />
@@ -108,8 +108,8 @@ export default {
       videoDeviceName: "",
       recording: false,
       mutePreview: true,
-      screenStream: null,
-      deviceStream: null,
+      audioStream: null,
+      videoStream: null,
       resultStream: null,
       recorder: null,
       chunks: [],
@@ -117,22 +117,23 @@ export default {
   },
   methods: {
     async selectWindow() {
-      this.screenStream?.getTracks().map((t) => t.stop()); // stop existing stream
+      this.videoStream?.getTracks().map((t) => t.stop()); // stop existing stream
       try {
-        this.screenStream = await navigator.mediaDevices.getDisplayMedia();
+        this.videoStream = await navigator.mediaDevices.getDisplayMedia();
       } catch (e) {
         console.log(e);
-        this.screenStream = null;
+        this.videoStream = null;
       }
-      this.updatePreview();
+      this.updatePreview("video");
     },
-    async updatePreview() {
+    /** `updated` can be `'video'`, `'audio'`, or `'all'` */
+    async updatePreview(updated) {
       if (!this.enablePreview) {
         this.$refs.preview.srcObject = null;
         return;
       }
 
-      await this.getResultStream();
+      await this.getResultStream(updated);
       this.$refs.preview.srcObject = this.resultStream;
     },
     async startRecording() {
@@ -156,75 +157,86 @@ export default {
       a.click();
       this.recorder = null;
     },
-    async getResultStream() {
-      this.resultStream?.getTracks().map((t) => t.stop());
+    /** `updated` can be `'video'`, `'audio'`, or `'all'` */
+    async getResultStream(updated) {
+      await this.refreshDeviceList();
 
-      await this.refreshDevices();
-
-      let options = { audio: false, video: false };
-      if (this.enableAudio) {
-        options.audio = {
-          deviceId: {
-            exact: this.devices.filter(
-              (d) => d.label == this.audioDeviceName
-            )[0].deviceId,
-          },
-        };
-      }
-      if (this.enableVideo) {
-        if (this.videoInputType == "camera") {
-          options.video = {
-            deviceId: {
-              exact: this.devices.filter(
-                (d) => d.label == this.videoDeviceName
-              )[0].deviceId,
+      if (["audio", "all"].includes(updated)) {
+        this.audioStream?.getTracks().map((t) => t.stop()); // stop existing stream
+        if (this.enableAudio) {
+          this.audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              deviceId: {
+                exact: this.devices.filter(
+                  (d) => d.label == this.audioDeviceName
+                )[0].deviceId,
+              },
             },
-          };
+          });
+        } else {
+          this.audioStream = null;
         }
       }
 
-      if (
-        this.enableAudio ||
-        (this.enableVideo && this.videoInputType == "camera")
-      ) {
-        try {
-          this.deviceStream = await navigator.mediaDevices.getUserMedia(
-            options
-          );
-        } catch (e) {
-          console.log(e);
-          this.deviceStream = null;
+      if (["video", "all"].includes(updated)) {
+        if (this.enableVideo) {
+          if (this.videoInputType == "camera") {
+            this.videoStream?.getTracks().map((t) => t.stop()); // stop existing stream
+            this.videoStream = await navigator.mediaDevices.getUserMedia({
+              video: {
+                deviceId: {
+                  exact: this.devices.filter(
+                    (d) => d.label == this.videoDeviceName
+                  )[0].deviceId,
+                },
+              },
+            });
+          }
+        } else {
+          this.videoStream?.getTracks().map((t) => t.stop()); // stop existing stream
+          this.videoStream = null;
         }
-      } else {
-        this.deviceStream = null;
       }
 
       let stream = new MediaStream();
-      this.deviceStream?.getTracks().map((t) => stream.addTrack(t));
-      this.screenStream?.getTracks().map((t) => stream.addTrack(t));
+      this.audioStream?.getTracks().map((t) => stream.addTrack(t));
+      this.videoStream?.getTracks().map((t) => stream.addTrack(t));
 
       this.resultStream = stream.getTracks().length == 0 ? null : stream;
     },
-    async refreshDevices() {
+    async refreshDeviceList() {
       if (
         this.enableAudio ||
         (this.enableVideo && this.videoInputType == "camera")
       ) {
         this.$bus.$emit("append-msg", "Refreshing device list...");
-        try {
-          this.ready = false;
-          await navigator.mediaDevices.getUserMedia({
-            audio: this.enableAudio,
-            video: this.enableVideo && this.videoInputType == "camera",
-          });
-        } catch {
-          this.$bus.$emit("append-msg", "Failed to get media devices.");
-          this.enableAudio = false;
-          this.videoInputType = "screen";
-          this.ready = true;
-          return;
+
+        let devices = await navigator.mediaDevices.enumerateDevices();
+        if (devices.some((d) => d.label == "")) {
+          // need to retrieve permission
+          try {
+            this.ready = false;
+            (
+              await navigator.mediaDevices.getUserMedia({
+                audio: this.enableAudio,
+                video: this.enableVideo && this.videoInputType == "camera",
+              })
+            )
+              .getTracks()
+              .map((t) => t.stop()); // stop devices
+
+            // enumerate again
+            devices = await navigator.mediaDevices.enumerateDevices();
+          } catch {
+            this.$bus.$emit("append-msg", "Failed to get media devices.");
+            this.enableAudio = false;
+            this.videoInputType = "screen";
+            this.ready = true;
+            return;
+          }
         }
-        this.devices = await navigator.mediaDevices.enumerateDevices();
+
+        this.devices = devices;
         this.audioDeviceName ||= this.audioDeviceNames[0] || "";
         this.videoDeviceName ||= this.videoDeviceNames[0] || "";
         this.ready = true;
