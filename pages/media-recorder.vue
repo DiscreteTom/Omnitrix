@@ -142,22 +142,26 @@ export default {
     async startRecording() {
       this.recording = true;
       this.chunks = [];
-      this.recorder = new MediaRecorder(await this.getResultStream(), {
+      this.recorder = new MediaRecorder(this.resultStream, {
         mimeType: "video/webm;codecs=vp9",
       });
-      this.recorder.ondataavailable = function (e) {
+      this.recorder.ondataavailable = (e) => {
         this.chunks.push(e.data);
+      };
+      this.recorder.onstop = () => {
+        var a = document.createElement("a");
+        a.download = "capture.mp4";
+        a.href = URL.createObjectURL(new Blob(this.chunks));
+        a.click();
       };
       this.recorder.start();
       this.$bus.$emit("append-msg", "Recording started");
+      console.log(this.recorder.state);
     },
     stopRecording() {
       this.recording = false;
       this.recorder.stop();
-      var a = document.createElement("a");
-      a.download = "capture.mp4";
-      a.href = URL.createObjectURL(new Blob(this.chunks));
-      a.click();
+      console.log(this.recorder.state);
       this.recorder = null;
     },
     /** `updated` can be `'video'`, `'audio'`, or `'all'` */
