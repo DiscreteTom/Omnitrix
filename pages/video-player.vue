@@ -35,8 +35,6 @@ export default {
     updateVideoSrc(event) {
       if (!event?.target?.files?.[0]) return;
 
-      console.log(event);
-
       this.videoOptions.sources[0] = {
         src: URL.createObjectURL(event.target.files[0]),
         type: event.target.files[0].type,
