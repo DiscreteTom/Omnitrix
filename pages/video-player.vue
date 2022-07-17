@@ -2,7 +2,7 @@
   <div>
     <video-player :options="videoOptions" ref="player" />
     <v-btn block @click="$refs.videoFileInput.click()" class="my-3">
-      CHOOSE FILE
+      CHOOSE VIDEO FILE
       <input
         type="file"
         ref="videoFileInput"
