@@ -1,30 +1,3 @@
-/**
-	   * @license
-	   * Copyright Google Inc. All Rights Reserved.
-	   *
-	   * Use of this source code is governed by an MIT-style license that can be
-	   * found in the LICENSE file at https://angular.io/license
-	   */
-
-/**
-	 * @license
-	 * Copyright Google Inc. All Rights Reserved.
-	 *
-	 * Use of this source code is governed by an MIT-style license that can be
-	 * found in the LICENSE file at https://angular.io/license
-	 */
-
-
-/*!
- * The buffer module from node.js, for the browser.
- *
- * @author   Feross Aboukhadijeh <http://feross.org>
- * @license  MIT
- */
-
-/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
-
-
 /*!
  * clipboard.js v2.0.8
  * https://clipboardjs.com/
@@ -67,6 +40,33 @@
  */
 
 
+/**
+	   * @license
+	   * Copyright Google Inc. All Rights Reserved.
+	   *
+	   * Use of this source code is governed by an MIT-style license that can be
+	   * found in the LICENSE file at https://angular.io/license
+	   */
+
+/**
+	 * @license
+	 * Copyright Google Inc. All Rights Reserved.
+	 *
+	 * Use of this source code is governed by an MIT-style license that can be
+	 * found in the LICENSE file at https://angular.io/license
+	 */
+
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <http://feross.org>
+ * @license  MIT
+ */
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+
 /*
 object-assign
 (c) Sindre Sorhus
@@ -91,6 +91,17 @@ object-assign
  * @copyright Chen, Yi-Cyuan 2014-2017
  * @license MIT
  */
+
+
+/*!
+ * Programatically add the following
+ */
+
+/*! @name @videojs/http-streaming @version 2.14.2 @license Apache-2.0 */
+
+/*! @name aes-decrypter @version 3.1.3 @license Apache-2.0 */
+
+/*! @name pkcs7 @version 1.0.4 @license Apache-2.0 */
 
 
 /*! js-yaml 4.1.0 https://github.com/nodeca/js-yaml @license MIT */
