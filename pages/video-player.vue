@@ -27,6 +27,7 @@ export default {
         autoplay: true,
         controls: true,
         sources: [],
+        fluid: true,
       },
     };
   },
