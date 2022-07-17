@@ -7,6 +7,7 @@
 <script>
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
+import "videojs-hotkeys";
 
 export default {
   props: {
@@ -32,8 +33,8 @@ export default {
       let video = document.createElement("video");
       video.className = "video-js";
       this.$refs.videoContainer.appendChild(video);
-      this.player = videojs(video, this.options, () => {
-        this.player.log("onPlayerReady", this);
+      this.player = videojs(video, this.options, function () {
+        this.hotkeys();
       });
     },
   },
