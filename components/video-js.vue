@@ -23,9 +23,6 @@ export default {
       player: null,
     };
   },
-  mounted() {
-    this.refresh;
-  },
   methods: {
     refresh() {
       this.player?.dispose();
@@ -35,6 +32,7 @@ export default {
       this.$refs.videoContainer.appendChild(video);
       this.player = videojs(video, this.options, function () {
         this.hotkeys();
+        video.focus();
       });
     },
   },
