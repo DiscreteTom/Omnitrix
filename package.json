@@ -32,6 +32,7 @@
     "qrcode.vue": "1",
     "uuid": "^8.3.2",
     "v-snackbars": "^3.2.4",
+    "video.js": "^7.19.2",
     "vue": "^2.6.14",
     "vue-clipboard2": "^0.3.3",
     "vue-codejar": "0.1.1",

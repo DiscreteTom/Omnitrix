@@ -155,6 +155,11 @@ export default {
           icon: "mdi-file-video-outline",
           text: "Media Recorder",
         },
+        {
+          to: "/video-player",
+          icon: "mdi-television-play",
+          text: "Video Player",
+        },
       ],
     };
   },
