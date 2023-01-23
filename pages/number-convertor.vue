@@ -155,7 +155,7 @@ export default {
       this.result["Quaternary (Base 4)"] = input.toString(4);
       this.result["Octal (Base 8)"] = input.toString(8);
       this.result["Decimal (Base 10)"] = input.toString(10);
-      this.result["Hexadecimal (Base 16)"] = input.toString(12);
+      this.result["Hexadecimal (Base 16)"] = input.toString(16);
       this.custom.map((r) => {
         try {
           r.txt = input.toString(r.base);
