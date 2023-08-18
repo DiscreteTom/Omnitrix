@@ -1,5 +1,7 @@
 # Omnitrix
 
+> **Note**: this repository is no longer maintained. Please use [DTTK](https://dttk.discretetom.com) instead.
+
 > Deployed on [github pages](https://discretetom.github.io/Omnitrix/).
 
 A browser based util tool set.
